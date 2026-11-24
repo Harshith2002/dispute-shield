@@ -1,0 +1,9 @@
+# raw data stays local (brief: synthetic, but do not publish)
+data/*.csv
+node_modules/
+frontend/dist/
+__pycache__/
+.pytest_cache/
+*.pyc
+.DS_Store
+.venv/
