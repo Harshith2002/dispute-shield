@@ -17,23 +17,29 @@ Validation rows: 54006, positives: 405.
 
 | approach | AUC | avg precision | log loss | Brier | ECE (calibration) | pred/actual | explainability | decision |
 |---|---|---|---|---|---|---|---|---|
-| lookup | 0.630 | 0.463 | 0.6196 | 0.2145 | 0.0736 | 0.93 | Readable table, but coarse segments | **chosen** |
+| lookup | 0.630 | 0.463 | 0.6196 | 0.2145 | 0.0736 | 0.93 | Readable table, but coarse segments | rejected |
 | logreg | 0.620 | 0.450 | 0.6454 | 0.2268 | 0.0899 | 1.20 | Calibrated and explainable per feature | rejected |
 | gbm | 0.613 | 0.448 | 0.6323 | 0.2205 | 0.0491 | 1.01 | Captures interactions; harder to explain | rejected |
+| logreg_small | 0.659 | 0.495 | 0.6126 | 0.2116 | 0.0415 | 0.95 | Three to five terms: evidence count, team response and win history | **chosen** |
 | constant (reference) | 0.500 | 0.348 | 0.6494 | 0.2283 | 0.0526 | 0.89 | trivial | reference only |
 
 Validation rows: 492, positives: 171.
+
+Largest standardised coefficients (refit logistic regression): `f_evidence_count` +0.44, `f_team_win_rate` +0.10, `f_team_response_rate` +0.09
 
 ## win_payment: Win chance if disputed, invoice + payment (payment collected)
 
 | approach | AUC | avg precision | log loss | Brier | ECE (calibration) | pred/actual | explainability | decision |
 |---|---|---|---|---|---|---|---|---|
-| lookup | 0.641 | 0.515 | 0.6156 | 0.2126 | 0.0609 | 0.91 | Readable table, but coarse segments | **chosen** |
+| lookup | 0.641 | 0.515 | 0.6156 | 0.2126 | 0.0609 | 0.91 | Readable table, but coarse segments | rejected |
 | logreg | 0.622 | 0.475 | 0.6422 | 0.2255 | 0.0965 | 1.19 | Calibrated and explainable per feature | rejected |
 | gbm | 0.625 | 0.497 | 0.6304 | 0.2197 | 0.0564 | 1.00 | Captures interactions; harder to explain | rejected |
+| logreg_small | 0.665 | 0.538 | 0.6046 | 0.2079 | 0.0393 | 0.96 | Three to five terms: evidence count, team response and win history | **chosen** |
 | constant (reference) | 0.500 | 0.348 | 0.6494 | 0.2283 | 0.0526 | 0.89 | trivial | reference only |
 
 Validation rows: 492, positives: 171.
+
+Largest standardised coefficients (refit logistic regression): `f_evidence_count` +0.46, `f_card_present` +0.24, `f_avs_cvv_match` +0.14, `f_team_win_rate` +0.10, `f_team_response_rate` +0.08
 
 ## win_dispute: Win chance with the evidence submitted (dispute received)
 

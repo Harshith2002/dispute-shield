@@ -4,85 +4,85 @@
       "policy": "address_mandatory",
       "metric": "disputes",
       "estimated_change": -42.7,
-      "low": -99.5,
-      "high": 49.6
+      "low": -115.5,
+      "high": 46.9
     },
     {
       "policy": "address_mandatory",
       "metric": "disputes_lost",
       "estimated_change": -70.3,
-      "low": -103.4,
-      "high": -1.8
+      "low": -125.6,
+      "high": -9.7
     },
     {
       "policy": "address_mandatory",
       "metric": "usd_lost",
       "estimated_change": -82614.0,
-      "low": -129666.0,
-      "high": 9027.0
+      "low": -163665.0,
+      "high": 3084.0
     },
     {
       "policy": "keyed_block_over_1000",
       "metric": "disputes",
       "estimated_change": -149.5,
-      "low": -161.6,
-      "high": -133.5
+      "low": -162.5,
+      "high": -136.6
     },
     {
       "policy": "keyed_block_over_1000",
       "metric": "disputes_lost",
       "estimated_change": -99.9,
-      "low": -109.6,
-      "high": -89.3
+      "low": -110.0,
+      "high": -90.0
     },
     {
       "policy": "keyed_block_over_1000",
       "metric": "usd_lost",
       "estimated_change": -490014.0,
-      "low": -535890.0,
-      "high": -438426.0
+      "low": -530977.0,
+      "high": -442500.0
     },
     {
       "policy": "signed_estimate_over_500",
       "metric": "disputes",
       "estimated_change": -56.8,
-      "low": -100.9,
-      "high": -32.0
+      "low": -91.2,
+      "high": -29.3
     },
     {
       "policy": "signed_estimate_over_500",
       "metric": "disputes_lost",
       "estimated_change": -62.1,
-      "low": -92.4,
-      "high": -29.4
+      "low": -93.0,
+      "high": -37.3
     },
     {
       "policy": "signed_estimate_over_500",
       "metric": "usd_lost",
       "estimated_change": -173648.0,
-      "low": -261133.0,
-      "high": -80208.0
+      "low": -264869.0,
+      "high": -103181.0
     },
     {
       "policy": "photos_required",
       "metric": "disputes",
-      "estimated_change": 81.2,
-      "low": -26.1,
-      "high": 167.2
+      "estimated_change": 0.0,
+      "low": 0.0,
+      "high": 0.0
     },
     {
       "policy": "photos_required",
       "metric": "disputes_lost",
-      "estimated_change": 25.4,
-      "low": -53.2,
-      "high": 98.9
+      "estimated_change": -26.0,
+      "low": -87.6,
+      "high": 34.4
     },
     {
       "policy": "photos_required",
       "metric": "usd_lost",
-      "estimated_change": 35730.0,
-      "low": -76749.0,
-      "high": 138964.0
+      "estimated_change": -36489.0,
+      "low": -124700.0,
+      "high": 48147.0
     }
   ],
   "meta": {
@@ -96,28 +96,28 @@
         "disputes": {
           "baseline": 1592.0,
           "estimate": -42.7,
-          "low": -99.5,
-          "high": 49.6,
+          "low": -115.5,
+          "high": 46.9,
           "confidence": "low",
-          "draws_same_sign": 0.7,
+          "draws_same_sign": 0.8,
           "naive_no_team_controls": -95.4
         },
         "disputes_lost": {
           "baseline": 1000.5,
           "estimate": -70.3,
-          "low": -103.4,
-          "high": -1.8,
+          "low": -125.6,
+          "high": -9.7,
           "confidence": "medium",
-          "draws_same_sign": 1.0,
+          "draws_same_sign": 0.98,
           "naive_no_team_controls": -122.4
         },
         "usd_lost": {
           "baseline": 1378087.0,
           "estimate": -82614.0,
-          "low": -129666.0,
-          "high": 9027.0,
+          "low": -163665.0,
+          "high": 3084.0,
           "confidence": "medium",
-          "draws_same_sign": 0.9,
+          "draws_same_sign": 0.94,
           "naive_no_team_controls": -158276.0
         }
       }
@@ -132,8 +132,8 @@
         "disputes": {
           "baseline": 1592.0,
           "estimate": -149.5,
-          "low": -161.6,
-          "high": -133.5,
+          "low": -162.5,
+          "high": -136.6,
           "confidence": "high",
           "draws_same_sign": 1.0,
           "naive_no_team_controls": -151.4
@@ -141,8 +141,8 @@
         "disputes_lost": {
           "baseline": 1000.5,
           "estimate": -99.9,
-          "low": -109.6,
-          "high": -89.3,
+          "low": -110.0,
+          "high": -90.0,
           "confidence": "high",
           "draws_same_sign": 1.0,
           "naive_no_team_controls": -100.8
@@ -150,8 +150,8 @@
         "usd_lost": {
           "baseline": 1378087.0,
           "estimate": -490014.0,
-          "low": -535890.0,
-          "high": -438426.0,
+          "low": -530977.0,
+          "high": -442500.0,
           "confidence": "high",
           "draws_same_sign": 1.0,
           "naive_no_team_controls": -498010.0
@@ -168,8 +168,8 @@
         "disputes": {
           "baseline": 1592.0,
           "estimate": -56.8,
-          "low": -100.9,
-          "high": -32.0,
+          "low": -91.2,
+          "high": -29.3,
           "confidence": "medium",
           "draws_same_sign": 1.0,
           "naive_no_team_controls": -93.2
@@ -177,8 +177,8 @@
         "disputes_lost": {
           "baseline": 1000.5,
           "estimate": -62.1,
-          "low": -92.4,
-          "high": -29.4,
+          "low": -93.0,
+          "high": -37.3,
           "confidence": "medium",
           "draws_same_sign": 1.0,
           "naive_no_team_controls": -97.6
@@ -186,8 +186,8 @@
         "usd_lost": {
           "baseline": 1378087.0,
           "estimate": -173648.0,
-          "low": -261133.0,
-          "high": -80208.0,
+          "low": -264869.0,
+          "high": -103181.0,
           "confidence": "medium",
           "draws_same_sign": 1.0,
           "naive_no_team_controls": -273475.0
@@ -197,36 +197,36 @@
     "photos_required": {
       "label": "Before and after photos required",
       "description": "Every job needs before and after photos attached before the payment is taken.",
-      "assumption": "No jobs lost.",
+      "assumption": "No jobs lost. The customer never sees job photos before disputing, so the number of disputes is held fixed and only the win rate changes (months 1-22 agree: within a team, photos move the dispute rate by +0.015 points, 90% range -0.05 to +0.09).",
       "affected_payments": 170062,
       "jobs_lost": 0,
       "metrics": {
         "disputes": {
           "baseline": 1592.0,
-          "estimate": 81.2,
-          "low": -26.1,
-          "high": 167.2,
-          "confidence": "low",
-          "draws_same_sign": 0.73,
-          "naive_no_team_controls": -89.7
+          "estimate": 0.0,
+          "low": 0.0,
+          "high": 0.0,
+          "confidence": "assumed",
+          "draws_same_sign": 1.0,
+          "naive_no_team_controls": 0.0
         },
         "disputes_lost": {
           "baseline": 1000.5,
-          "estimate": 25.4,
-          "low": -53.2,
-          "high": 98.9,
+          "estimate": -26.0,
+          "low": -87.6,
+          "high": 34.4,
           "confidence": "low",
-          "draws_same_sign": 0.63,
-          "naive_no_team_controls": -146.7
+          "draws_same_sign": 0.78,
+          "naive_no_team_controls": -94.9
         },
         "usd_lost": {
           "baseline": 1378087.0,
-          "estimate": 35730.0,
-          "low": -76749.0,
-          "high": 138964.0,
+          "estimate": -36489.0,
+          "low": -124700.0,
+          "high": 48147.0,
           "confidence": "low",
-          "draws_same_sign": 0.63,
-          "naive_no_team_controls": -205554.0
+          "draws_same_sign": 0.78,
+          "naive_no_team_controls": -133106.0
         }
       }
     }

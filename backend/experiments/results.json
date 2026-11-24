@@ -93,6 +93,16 @@
           "brier": 0.22052171392507763,
           "ece": 0.04906199130470659,
           "pred_over_actual": 1.0109218924894632
+        },
+        "logreg_small": {
+          "n": 492,
+          "positives": 171,
+          "auc": 0.6587327612905577,
+          "avg_precision": 0.49476078035228666,
+          "log_loss": 0.6126183181458856,
+          "brier": 0.21163203877819928,
+          "ece": 0.0415389786655693,
+          "pred_over_actual": 0.9497830191358048
         }
       },
       "constant": {
@@ -139,6 +149,16 @@
           "brier": 0.21965568486892428,
           "ece": 0.05640981471998684,
           "pred_over_actual": 0.9956477463433462
+        },
+        "logreg_small": {
+          "n": 492,
+          "positives": 171,
+          "auc": 0.6648539833488185,
+          "avg_precision": 0.5384501532819734,
+          "log_loss": 0.6045921492233299,
+          "brier": 0.20789718457716366,
+          "ece": 0.039323577332346746,
+          "pred_over_actual": 0.9556474883676945
         }
       },
       "constant": {
@@ -201,8 +221,8 @@
   },
   "chosen": {
     "risk": "gbm",
-    "win_invoice": "lookup",
-    "win_payment": "lookup",
+    "win_invoice": "logreg_small",
+    "win_payment": "logreg_small",
     "win_dispute": "logreg"
   },
   "blank": []

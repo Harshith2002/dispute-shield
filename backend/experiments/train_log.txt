@@ -1,63 +1,235 @@
-13:59:45 loading data
-13:59:51 building as-of features
-13:59:54 risk: train 128671 rows, valid 54006 rows, positives 1406
-13:59:54   lookup  auc=0.768 logloss=0.0364 ece=0.0008
-13:59:55   logreg  auc=0.786 logloss=0.0356 ece=0.0015
-14:00:16   gbm     auc=0.798 logloss=0.0342 ece=0.0006
-14:00:39   held-out dispute rate by tier: {'high': {'dispute_rate': 0.0792, 'n': 2777}, 'low': {'dispute_rate': 0.003, 'n': 39991}, 'medium': {'dispute_rate': 0.006, 'n': 11238}}
-14:01:05   constant logloss=0.0442  (train rate 0.0078, valid rate 0.0075)
-14:01:05 win_invoice: train 829 rows, valid 492 rows, positives 427
-14:01:05   lookup  auc=0.630 logloss=0.6196 ece=0.0736
-14:01:05   logreg  auc=0.620 logloss=0.6454 ece=0.0899
-14:01:06   gbm     auc=0.613 logloss=0.6323 ece=0.0491
-14:01:06   constant logloss=0.6494  (train rate 0.3088, valid rate 0.3476)
-14:01:07 win_payment: train 829 rows, valid 492 rows, positives 427
-14:01:07   lookup  auc=0.641 logloss=0.6156 ece=0.0609
-14:01:07   logreg  auc=0.622 logloss=0.6422 ece=0.0965
-14:01:09   gbm     auc=0.625 logloss=0.6304 ece=0.0564
-14:01:09   constant logloss=0.6494  (train rate 0.3088, valid rate 0.3476)
-14:01:09 win_dispute: train 829 rows, valid 492 rows, positives 427
-14:01:09   lookup  auc=0.746 logloss=0.5636 ece=0.0773
-14:01:09   logreg  auc=0.778 logloss=0.5309 ece=0.0611
-14:01:13   gbm     auc=0.763 logloss=0.5381 ece=0.0521
-14:01:13   constant logloss=0.6494  (train rate 0.3088, valid rate 0.3476)
-14:01:17 what-if: fitting policy models + 30 bootstrap draws
-14:01:35   what-if bootstrap 1/30
-14:01:40   what-if bootstrap 2/30
-14:01:46   what-if bootstrap 3/30
-14:01:52   what-if bootstrap 4/30
-14:01:58   what-if bootstrap 5/30
-14:02:04   what-if bootstrap 6/30
-14:02:10   what-if bootstrap 7/30
-14:02:15   what-if bootstrap 8/30
-14:02:21   what-if bootstrap 9/30
-14:02:27   what-if bootstrap 10/30
-14:02:33   what-if bootstrap 11/30
-14:02:39   what-if bootstrap 12/30
-14:02:44   what-if bootstrap 13/30
-14:02:50   what-if bootstrap 14/30
-14:02:56   what-if bootstrap 15/30
-14:03:02   what-if bootstrap 16/30
-14:03:08   what-if bootstrap 17/30
-14:03:14   what-if bootstrap 18/30
-14:03:20   what-if bootstrap 19/30
-14:03:26   what-if bootstrap 20/30
-14:03:32   what-if bootstrap 21/30
-14:03:38   what-if bootstrap 22/30
-14:03:43   what-if bootstrap 23/30
-14:03:49   what-if bootstrap 24/30
-14:03:55   what-if bootstrap 25/30
-14:04:02   what-if bootstrap 26/30
-14:04:08   what-if bootstrap 27/30
-14:04:14   what-if bootstrap 28/30
-14:04:19   what-if bootstrap 29/30
-14:04:25   what-if bootstrap 30/30
-14:04:26 models saved; chosen={'risk': 'gbm', 'win_invoice': 'lookup', 'win_payment': 'lookup', 'win_dispute': 'logreg'}; blank=[]; tiers=[0.00565055792823369, 0.019565847469103392]
-14:04:26 dispute rate by tier (in-sample):
+19:55:46 loading data
+19:55:52 building as-of features
+19:55:55 risk: train 128671 rows, valid 54006 rows, positives 1406
+19:55:56   lookup  auc=0.768 logloss=0.0364 ece=0.0008
+19:55:57   logreg  auc=0.786 logloss=0.0356 ece=0.0015
+19:56:19   gbm     auc=0.798 logloss=0.0342 ece=0.0006
+19:56:40   held-out dispute rate by tier: {'high': {'dispute_rate': 0.0792, 'n': 2777}, 'low': {'dispute_rate': 0.003, 'n': 39991}, 'medium': {'dispute_rate': 0.006, 'n': 11238}}
+19:57:05   constant logloss=0.0442  (train rate 0.0078, valid rate 0.0075)
+19:57:05 win_invoice: train 829 rows, valid 492 rows, positives 427
+19:57:05   lookup  auc=0.630 logloss=0.6196 ece=0.0736
+19:57:05   logreg  auc=0.620 logloss=0.6454 ece=0.0899
+19:57:07   gbm     auc=0.613 logloss=0.6323 ece=0.0491
+19:57:07   logreg_small auc=0.659 logloss=0.6126 ece=0.0415
+19:57:07   constant logloss=0.6494  (train rate 0.3088, valid rate 0.3476)
+19:57:07 win_payment: train 829 rows, valid 492 rows, positives 427
+19:57:07   lookup  auc=0.641 logloss=0.6156 ece=0.0609
+19:57:07   logreg  auc=0.622 logloss=0.6422 ece=0.0965
+19:57:08   gbm     auc=0.625 logloss=0.6304 ece=0.0564
+19:57:08   logreg_small auc=0.665 logloss=0.6046 ece=0.0393
+19:57:08   constant logloss=0.6494  (train rate 0.3088, valid rate 0.3476)
+19:57:09 win_dispute: train 829 rows, valid 492 rows, positives 427
+19:57:09   lookup  auc=0.746 logloss=0.5636 ece=0.0773
+19:57:09   logreg  auc=0.778 logloss=0.5309 ece=0.0611
+19:57:10   gbm     auc=0.763 logloss=0.5381 ece=0.0521
+19:57:10   constant logloss=0.6494  (train rate 0.3088, valid rate 0.3476)
+19:57:14 what-if: fitting policy models + 200 bootstrap draws
+19:57:31   what-if bootstrap 1/200
+19:57:36   what-if bootstrap 2/200
+19:57:42   what-if bootstrap 3/200
+19:57:47   what-if bootstrap 4/200
+19:57:53   what-if bootstrap 5/200
+19:57:59   what-if bootstrap 6/200
+19:58:04   what-if bootstrap 7/200
+19:58:10   what-if bootstrap 8/200
+19:58:15   what-if bootstrap 9/200
+19:58:21   what-if bootstrap 10/200
+19:58:29   what-if bootstrap 11/200
+19:58:35   what-if bootstrap 12/200
+19:58:41   what-if bootstrap 13/200
+19:58:47   what-if bootstrap 14/200
+19:58:52   what-if bootstrap 15/200
+19:58:58   what-if bootstrap 16/200
+19:59:03   what-if bootstrap 17/200
+19:59:09   what-if bootstrap 18/200
+19:59:14   what-if bootstrap 19/200
+19:59:21   what-if bootstrap 20/200
+19:59:27   what-if bootstrap 21/200
+19:59:34   what-if bootstrap 22/200
+19:59:40   what-if bootstrap 23/200
+19:59:47   what-if bootstrap 24/200
+19:59:54   what-if bootstrap 25/200
+20:00:01   what-if bootstrap 26/200
+20:00:07   what-if bootstrap 27/200
+20:00:14   what-if bootstrap 28/200
+20:00:19   what-if bootstrap 29/200
+20:00:25   what-if bootstrap 30/200
+20:00:31   what-if bootstrap 31/200
+20:00:36   what-if bootstrap 32/200
+20:00:42   what-if bootstrap 33/200
+20:00:49   what-if bootstrap 34/200
+20:00:57   what-if bootstrap 35/200
+20:01:02   what-if bootstrap 36/200
+20:01:08   what-if bootstrap 37/200
+20:01:13   what-if bootstrap 38/200
+20:01:19   what-if bootstrap 39/200
+20:01:24   what-if bootstrap 40/200
+20:01:29   what-if bootstrap 41/200
+20:01:35   what-if bootstrap 42/200
+20:01:40   what-if bootstrap 43/200
+20:01:45   what-if bootstrap 44/200
+20:01:50   what-if bootstrap 45/200
+20:01:56   what-if bootstrap 46/200
+20:02:01   what-if bootstrap 47/200
+20:02:07   what-if bootstrap 48/200
+20:02:12   what-if bootstrap 49/200
+20:02:17   what-if bootstrap 50/200
+20:02:22   what-if bootstrap 51/200
+20:02:28   what-if bootstrap 52/200
+20:02:33   what-if bootstrap 53/200
+20:02:38   what-if bootstrap 54/200
+20:02:44   what-if bootstrap 55/200
+20:02:52   what-if bootstrap 56/200
+20:03:02   what-if bootstrap 57/200
+20:03:13   what-if bootstrap 58/200
+20:03:22   what-if bootstrap 59/200
+20:03:28   what-if bootstrap 60/200
+20:03:35   what-if bootstrap 61/200
+20:03:45   what-if bootstrap 62/200
+20:03:53   what-if bootstrap 63/200
+20:03:59   what-if bootstrap 64/200
+20:04:06   what-if bootstrap 65/200
+20:04:11   what-if bootstrap 66/200
+20:04:17   what-if bootstrap 67/200
+20:04:23   what-if bootstrap 68/200
+20:04:28   what-if bootstrap 69/200
+20:04:34   what-if bootstrap 70/200
+20:04:40   what-if bootstrap 71/200
+20:04:46   what-if bootstrap 72/200
+20:04:52   what-if bootstrap 73/200
+20:04:57   what-if bootstrap 74/200
+20:05:03   what-if bootstrap 75/200
+20:05:08   what-if bootstrap 76/200
+20:05:13   what-if bootstrap 77/200
+20:05:19   what-if bootstrap 78/200
+20:05:25   what-if bootstrap 79/200
+20:05:30   what-if bootstrap 80/200
+20:05:36   what-if bootstrap 81/200
+20:05:44   what-if bootstrap 82/200
+20:05:50   what-if bootstrap 83/200
+20:05:55   what-if bootstrap 84/200
+20:06:00   what-if bootstrap 85/200
+20:06:06   what-if bootstrap 86/200
+20:06:11   what-if bootstrap 87/200
+20:06:17   what-if bootstrap 88/200
+20:06:23   what-if bootstrap 89/200
+20:06:29   what-if bootstrap 90/200
+20:06:35   what-if bootstrap 91/200
+20:06:42   what-if bootstrap 92/200
+20:06:48   what-if bootstrap 93/200
+20:06:53   what-if bootstrap 94/200
+20:06:59   what-if bootstrap 95/200
+20:07:04   what-if bootstrap 96/200
+20:07:09   what-if bootstrap 97/200
+20:07:15   what-if bootstrap 98/200
+20:07:20   what-if bootstrap 99/200
+20:07:25   what-if bootstrap 100/200
+20:07:30   what-if bootstrap 101/200
+20:07:36   what-if bootstrap 102/200
+20:07:41   what-if bootstrap 103/200
+20:07:46   what-if bootstrap 104/200
+20:07:51   what-if bootstrap 105/200
+20:07:57   what-if bootstrap 106/200
+20:08:02   what-if bootstrap 107/200
+20:08:07   what-if bootstrap 108/200
+20:08:12   what-if bootstrap 109/200
+20:08:18   what-if bootstrap 110/200
+20:08:23   what-if bootstrap 111/200
+20:08:28   what-if bootstrap 112/200
+20:08:33   what-if bootstrap 113/200
+20:08:38   what-if bootstrap 114/200
+20:08:43   what-if bootstrap 115/200
+20:08:48   what-if bootstrap 116/200
+20:08:53   what-if bootstrap 117/200
+20:08:59   what-if bootstrap 118/200
+20:09:04   what-if bootstrap 119/200
+20:09:10   what-if bootstrap 120/200
+20:09:15   what-if bootstrap 121/200
+20:09:20   what-if bootstrap 122/200
+20:09:26   what-if bootstrap 123/200
+20:09:32   what-if bootstrap 124/200
+20:09:37   what-if bootstrap 125/200
+20:09:42   what-if bootstrap 126/200
+20:09:48   what-if bootstrap 127/200
+20:09:53   what-if bootstrap 128/200
+20:09:58   what-if bootstrap 129/200
+20:10:03   what-if bootstrap 130/200
+20:10:09   what-if bootstrap 131/200
+20:10:13   what-if bootstrap 132/200
+20:10:19   what-if bootstrap 133/200
+20:10:24   what-if bootstrap 134/200
+20:10:29   what-if bootstrap 135/200
+20:10:34   what-if bootstrap 136/200
+20:10:40   what-if bootstrap 137/200
+20:10:45   what-if bootstrap 138/200
+20:10:50   what-if bootstrap 139/200
+20:10:56   what-if bootstrap 140/200
+20:11:01   what-if bootstrap 141/200
+20:11:06   what-if bootstrap 142/200
+20:11:11   what-if bootstrap 143/200
+20:11:16   what-if bootstrap 144/200
+20:11:21   what-if bootstrap 145/200
+20:11:26   what-if bootstrap 146/200
+20:11:31   what-if bootstrap 147/200
+20:11:36   what-if bootstrap 148/200
+20:11:42   what-if bootstrap 149/200
+20:11:51   what-if bootstrap 150/200
+20:11:59   what-if bootstrap 151/200
+20:12:07   what-if bootstrap 152/200
+20:12:12   what-if bootstrap 153/200
+20:12:18   what-if bootstrap 154/200
+20:12:25   what-if bootstrap 155/200
+20:12:31   what-if bootstrap 156/200
+20:12:36   what-if bootstrap 157/200
+20:12:41   what-if bootstrap 158/200
+20:12:46   what-if bootstrap 159/200
+20:12:51   what-if bootstrap 160/200
+20:12:57   what-if bootstrap 161/200
+20:13:02   what-if bootstrap 162/200
+20:13:07   what-if bootstrap 163/200
+20:13:12   what-if bootstrap 164/200
+20:13:17   what-if bootstrap 165/200
+20:13:22   what-if bootstrap 166/200
+20:13:27   what-if bootstrap 167/200
+20:13:31   what-if bootstrap 168/200
+20:13:36   what-if bootstrap 169/200
+20:13:41   what-if bootstrap 170/200
+20:13:46   what-if bootstrap 171/200
+20:13:51   what-if bootstrap 172/200
+20:13:56   what-if bootstrap 173/200
+20:14:01   what-if bootstrap 174/200
+20:14:07   what-if bootstrap 175/200
+20:14:11   what-if bootstrap 176/200
+20:14:18   what-if bootstrap 177/200
+20:14:25   what-if bootstrap 178/200
+20:14:30   what-if bootstrap 179/200
+20:14:36   what-if bootstrap 180/200
+20:14:42   what-if bootstrap 181/200
+20:14:47   what-if bootstrap 182/200
+20:14:52   what-if bootstrap 183/200
+20:14:58   what-if bootstrap 184/200
+20:15:04   what-if bootstrap 185/200
+20:15:09   what-if bootstrap 186/200
+20:15:14   what-if bootstrap 187/200
+20:15:19   what-if bootstrap 188/200
+20:15:25   what-if bootstrap 189/200
+20:15:31   what-if bootstrap 190/200
+20:15:36   what-if bootstrap 191/200
+20:15:43   what-if bootstrap 192/200
+20:15:48   what-if bootstrap 193/200
+20:15:53   what-if bootstrap 194/200
+20:15:58   what-if bootstrap 195/200
+20:16:03   what-if bootstrap 196/200
+20:16:08   what-if bootstrap 197/200
+20:16:13   what-if bootstrap 198/200
+20:16:21   what-if bootstrap 199/200
+20:16:31   what-if bootstrap 200/200
+20:16:32 models saved; chosen={'risk': 'gbm', 'win_invoice': 'logreg_small', 'win_payment': 'logreg_small', 'win_dispute': 'logreg'}; blank=[]; tiers=[0.00565055792823369, 0.019565847469103392]
+20:16:32 dispute rate by tier (in-sample):
             mean    size
 tier                    
 high    0.083096    9134
 low     0.002839  137007
 medium  0.007062   36536
-14:04:26 app data
-14:04:36 done
+20:16:32 app data
+20:16:42 done

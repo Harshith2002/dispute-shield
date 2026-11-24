@@ -21,6 +21,8 @@ class Policy:
     apply: Callable[[pd.DataFrame], None]              # mutates feature columns of the affected rows (a copy)
     jobs_lost: Callable[[pd.DataFrame], pd.Series]     # frame -> share of each job no longer on ScanPay
     assumption: str
+    # False when the customer never sees the change before deciding to dispute, so only win/loss can move
+    changes_dispute_rate: bool = True
 
 
 def _no_loss(F):
@@ -76,6 +78,9 @@ POLICIES = [
     Policy("photos_required", "Before and after photos required",
            "Every job needs before and after photos attached before the payment is taken.",
            affected=lambda F: (F.f_photo_before == 0) | (F.f_photo_after == 0), apply=_set_photos,
-           jobs_lost=_no_loss, assumption="No jobs lost."),
+           jobs_lost=_no_loss, changes_dispute_rate=False,
+           assumption="No jobs lost. The customer never sees job photos before disputing, so the number of disputes "
+                      "is held fixed and only the win rate changes (months 1-22 agree: within a team, photos move "
+                      "the dispute rate by +0.015 points, 90% range -0.05 to +0.09)."),
 ]
 BY_NAME = {p.name: p for p in POLICIES}

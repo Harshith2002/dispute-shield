@@ -79,7 +79,8 @@ def _effects(S, md, ml, features, side_scale=1.0) -> dict:
         F.loc[mask, sub.columns] = derive(sub)
         keep = 1 - np.clip(pol.jobs_lost(P).values * side_scale, 0, 1)
         X1 = F[features].values
-        d1, l1 = md.predict_proba(X1)[:, 1] * keep, ml.predict_proba(X1)[:, 1]
+        d1 = (md.predict_proba(X1)[:, 1] if pol.changes_dispute_rate else d0) * keep
+        l1 = ml.predict_proba(X1)[:, 1]
         out[pol.name] = {
             "disputes": s_d * (w * (d1 - d0)).sum(),
             "disputes_lost": s_l * (w * (d1 * l1 - d0 * l0)).sum(),
@@ -121,6 +122,8 @@ def run(P: pd.DataFrame, disputes: pd.DataFrame, n_boot=30, seed=0, log=print) -
             same_sign = float(np.mean(np.sign(bs) == np.sign(est)))
             rel = (hi - lo) / 2 / max(abs(est), 1e-9)
             conf = "high" if same_sign >= 0.95 and rel <= 0.35 else "medium" if same_sign >= 0.9 else "low"
+            if metric == "disputes" and not pol.changes_dispute_rate:
+                conf = "assumed"
             rnd = 0 if metric == "usd_lost" else 1
             rows.append({"policy": pol.name, "metric": metric, "estimated_change": round(est, rnd),
                          "low": round(lo, rnd), "high": round(hi, rnd)})

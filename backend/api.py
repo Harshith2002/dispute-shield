@@ -13,7 +13,7 @@ from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.responses import FileResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
-from config import ARTIFACTS, BACKEND, DISPUTE_FEE
+from config import ARTIFACTS, BACKEND, DISPUTE_FEE, FIGHT_COST
 from data import read_table
 from evidence import EVIDENCE_RULES
 from policies import POLICIES
@@ -120,7 +120,8 @@ def dispute_summary(D):
                           "avg_win_prob": round(float(g.win_prob.mean()), 3),
                           "fight": int((g.recommendation == "fight").sum()),
                           "amount_usd": round(float(g.amount_usd.sum()), 2),
-                          "expected_usd_lost_if_fought": round(float(((1 - g.win_prob) * g.amount_usd).sum()), 2)})
+                          "expected_usd_lost_if_fought": round(float(
+                              ((1 - g.win_prob) * (g.amount_usd + DISPUTE_FEE) + FIGHT_COST).sum()), 2)})
     f = D[D.recommendation == "fight"]
     return {"disputes": int(len(D)), "fight": int((D.recommendation == "fight").sum()),
             "expected_recovery_usd": round(float((f.win_prob * (f.amount_usd + DISPUTE_FEE)).sum()), 2),

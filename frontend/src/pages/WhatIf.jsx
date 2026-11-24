@@ -12,6 +12,7 @@ const CONF_WHY = {
   medium: "the direction holds in most resamples but the size is uncertain",
   low: "resamples disagree on the direction, so treat this as no reliable effect",
 };
+const CONF_TITLE = { assumed: "Assumed, not estimated" };
 
 function RangeChart({ meta, metric, fmt, selected, onSelect }) {
   const rows = Object.entries(meta).map(([k, v]) => ({ key: k, label: v.label, ...v.metrics[metric] }));
@@ -100,8 +101,10 @@ export default function WhatIf() {
                 <div className="figure">{signed(m.estimate, f)}</div>
                 <div className="small num">range {signed(m.low, f)} to {signed(m.high, f)}</div>
                 <div className="small muted num">baseline {f(m.baseline)}</div>
-                <div className={`small conf-${m.confidence}`} style={{ fontWeight: 700 }}>{m.confidence[0].toUpperCase() + m.confidence.slice(1)} confidence</div>
-                <div className="small muted">{Math.round(m.draws_same_sign * 100)}% of resamples agree on the direction: {CONF_WHY[m.confidence]}. Without team controls the estimate would be {signed(m.naive_no_team_controls, f)}.</div>
+                <div className={`small conf-${m.confidence}`} style={{ fontWeight: 700 }}>{CONF_TITLE[m.confidence] || m.confidence[0].toUpperCase() + m.confidence.slice(1) + " confidence"}</div>
+                <div className="small muted">{m.confidence === "assumed"
+                  ? "Held fixed by the policy's assumption above."
+                  : `${Math.round(m.draws_same_sign * 100)}% of resamples agree on the direction: ${CONF_WHY[m.confidence]}. Without team controls the estimate would be ${signed(m.naive_no_team_controls, f)}.`}</div>
               </div>
             );
           })}

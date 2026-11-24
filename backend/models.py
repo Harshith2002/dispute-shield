@@ -65,19 +65,30 @@ def seg_dispute(X):
 
 
 SEGMENTS = {"risk": seg_risk, "win_invoice": seg_invoice, "win_payment": seg_payment, "win_dispute": seg_dispute}
-EXPLAIN_RANK = {"lookup": 0, "logreg": 1, "gbm": 2}
+EXPLAIN_RANK = {"lookup": 0, "logreg_small": 0.5, "logreg": 1, "gbm": 2}
+
+# Before a dispute, winning hinges on whether the team will respond and on how much evidence exists,
+# so a few-term model avoids the overfitting of ~50 features on ~1.3k disputes.
+_TEAM = ["f_evidence_count", "f_team_response_rate", "f_team_win_rate"]
+COMPACT = {"win_invoice": _TEAM, "win_payment": _TEAM + ["f_card_present", "f_avs_cvv_match"]}
+
+
+def _logreg(C, features):
+    return Columns(make_pipeline(StandardScaler(), LogisticRegression(C=C, max_iter=2000)), features)
 
 
 def candidates(target: str, features: list) -> dict:
     small = target != "risk"   # win models have ~1.3k rows: stronger regularisation, fewer trees
-    return {
+    out = {
         "lookup": SegmentRate(SEGMENTS[target]),
-        "logreg": Columns(make_pipeline(StandardScaler(), LogisticRegression(C=0.05 if small else 0.1,
-                                                                             max_iter=2000)), features),
+        "logreg": _logreg(0.05 if small else 0.1, features),
         "gbm": Columns(CalibratedClassifierCV(HistGradientBoostingClassifier(
             max_depth=3, learning_rate=0.05, max_iter=150 if small else 300, l2_regularization=1.0,
             min_samples_leaf=20 if small else 200, random_state=0), method="sigmoid", cv=5), features),
     }
+    if target in COMPACT:
+        out["logreg_small"] = _logreg(1.0, COMPACT[target])
+    return out
 
 
 def ece(y, p, bins=10) -> float:
