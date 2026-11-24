@@ -1,136 +1,166 @@
 import React, { useEffect, useState } from "react";
 import { get, num, pct, usd } from "../api.js";
-import { Actions, Prob, Rec, Stat, Tier } from "../components.jsx";
+import { ActionList, ErrorBox, Figure, Loading, Meter, Outcome, Rec, Tier } from "../components.jsx";
+
+function Gaps({ gaps }) {
+  if (!gaps.length) return <p className="muted">This team's paperwork is at or above the platform on every evidence type that moves the win chance.</p>;
+  return (
+    <>
+      {gaps.map((g) => (
+        <div className="gap-row" key={g.item}>
+          <div><b>{g.label}</b><span className="cell-sub">missing on {pct(g.share_missing)} of payments</span></div>
+          <div className="gap-bar" role="img" aria-label={`${g.label}: missing on ${pct(g.share_missing)} of this team's payments, platform ${pct(g.platform_missing)}`}>
+            <div className="team" style={{ width: `${g.share_missing * 100}%` }} />
+            <div className="plat" style={{ left: `${g.platform_missing * 100}%` }} title={`Platform ${pct(g.platform_missing)}`} />
+          </div>
+          <span className="gain">+{g.win_points_gain} pts</span>
+          <p className="gap-fix">{g.fix}</p>
+        </div>
+      ))}
+      <div className="legend" style={{ marginTop: 12 }}>
+        <span><span className="swatch" style={{ background: "var(--tier-medium)" }} />Share of this team's payments missing it</span>
+        <span><span className="swatch" style={{ background: "var(--ink)", width: 2 }} />Platform</span>
+        <span>Points: rise in the team's win chance on disputes, estimated within teams</span>
+      </div>
+    </>
+  );
+}
 
 export default function Team({ meta, team, setTeam }) {
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (!team && meta?.teams.length) setTeam(meta.teams[0]);
-  }, [meta]);
-
-  useEffect(() => {
+  useEffect(() => { if (!team && meta?.teams.length) setTeam(meta.teams[0]); }, [meta]);
+  const load = () => {
     if (!team) return;
-    setError("");
-    get(`teams/${encodeURIComponent(team)}`).then(setData).catch((e) => { setData(null); setError(e.message); });
-  }, [team]);
+    setLoading(true); setError("");
+    get(`teams/${encodeURIComponent(team)}`).then(setData).catch((e) => { setData(null); setError(e.message); }).finally(() => setLoading(false));
+  };
+  useEffect(load, [team]);
 
-  const h = data?.history;
-  const u = data?.uploaded;
-  const platform = meta?.totals;
+  const h = data?.history, u = data?.uploaded, plat = meta?.totals;
 
   return (
     <div className="stack">
-      <div className="card">
-        <h2>By team</h2>
-        <div className="filters">
-          <select value={team} onChange={(e) => setTeam(e.target.value)} aria-label="Team">
-            {meta?.teams.map((t) => <option key={t} value={t}>{meta.team_labels[t]}</option>)}
-          </select>
+      <div className="page-head">
+        <div>
+          <h1>Teams</h1>
+          <p>One team's record over months 1–22, the paperwork gaps that cost it disputes, and its uploaded payments.</p>
+        </div>
+        <div className="toolbar" style={{ padding: 0, border: 0 }}>
+          <label>Team
+            <select value={team} onChange={(e) => setTeam(e.target.value)}>
+              {meta?.teams.map((t) => <option key={t} value={t}>{meta.team_labels[t]}</option>)}
+            </select>
+          </label>
         </div>
       </div>
-      {error && <div className="error">{error}</div>}
+
+      {error && <ErrorBox message={error} onRetry={load} />}
+      {loading && !h && <div className="panel"><Loading what="team" /></div>}
 
       {h && (
         <>
-          <section className="card">
-            <h3>{h.team_id} · {h.profession} · {h.state} · {h.team_size} people</h3>
-            <p className="muted small">Months 1–22 history. On ScanPay since {h.onboarded_on}.</p>
-            <div className="stats">
-              <Stat label="Payments" value={num(h.payments)} hint={usd(h.volume_usd)} />
-              <Stat label="Disputes" value={num(h.disputes)} hint={`${pct(h.dispute_rate, 2)} of payments · platform ${pct(platform?.dispute_rate, 2)}`} />
-              <Stat label="Win rate" value={pct(h.win_rate)} hint={`${h.won} won · ${h.lost} lost · platform ${pct(platform?.win_rate)}`} />
-              <Stat label="Lost to disputes" value={usd(h.usd_lost)} hint="amount + $25 fee per lost dispute" />
-              <Stat label="Responded" value={pct(h.responded_rate)} hint="unanswered disputes are almost always lost" />
-              <Stat label="Keyed-in cards" value={pct(h.keyed_share)} hint={`platform ${pct(platform?.platform_keyed_share)}`} />
+          <section className="panel" aria-labelledby="team-name">
+            <div className="team-hero">
+              <div>
+                <h2 id="team-name">{h.team_id}</h2>
+                <p className="muted">{h.profession} · {h.state} · {h.team_size} people · on ScanPay since {h.onboarded_on}</p>
+              </div>
+              <p className="small muted">{num(h.payments)} payments · {usd(h.volume_usd)} collected</p>
+            </div>
+            <div className="figures" style={{ marginTop: 18 }}>
+              <Figure label="Dispute rate" value={pct(h.dispute_rate, 2)} note={`platform ${pct(plat?.dispute_rate, 2)} · ${h.disputes} disputes`} />
+              <Figure label="Win rate" value={h.win_rate == null ? "No decided disputes" : pct(h.win_rate)} note={`${h.won} won, ${h.lost} lost · platform ${pct(plat?.win_rate)}`} />
+              <Figure label="Lost to disputes" value={usd(h.usd_lost)} note="amount + $25 fee per lost dispute" />
+              <Figure label="Responded to" value={h.disputes ? pct(h.responded_rate) : "No disputes"} note="unanswered disputes are almost always lost" />
+              <Figure label="Keyed-in cards" value={pct(h.keyed_share)} note={`platform ${pct(plat?.platform_keyed_share)}`} />
             </div>
           </section>
 
-          <section className="card">
-            <h3>Main gaps</h3>
-            {h.gaps.length === 0 ? <p className="muted">No significant paperwork gaps compared with the platform.</p> : (
-              <table>
-                <thead><tr><th>Evidence</th><th className="num">Missing on</th><th className="num">Platform</th><th className="num">Win-chance gain</th><th>What to do</th></tr></thead>
+          <section className="panel" aria-labelledby="gaps">
+            <div className="panel-head"><h2 id="gaps">Biggest fixes</h2><p>Evidence this team leaves off, ranked by how much adding it would raise its win chance.</p></div>
+            <Gaps gaps={h.gaps} />
+          </section>
+
+          <div className="grid-2">
+            <section className="panel flush" aria-labelledby="recent">
+              <div className="panel-head" style={{ padding: "16px 16px 0" }}><h3 id="recent">Recent disputes</h3></div>
+              {h.recent_disputes.length === 0 ? <div className="state"><p>No disputes in months 1–22.</p></div> : (
+                <div className="table-wrap">
+                  <table>
+                    <thead><tr><th>Dispute</th><th>Reason</th><th className="r">Amount</th><th>Responded</th><th>Outcome</th></tr></thead>
+                    <tbody>
+                      {h.recent_disputes.map((d) => (
+                        <tr key={d.dispute_id}>
+                          <td><span className="mono">{d.dispute_id}</span><span className="cell-sub">{d.opened_at}</span></td>
+                          <td>{d.reason}</td><td className="r">{usd(d.amount_usd, 2)}</td>
+                          <td>{d.responded ? "Yes" : <span className="warn-text">No</span>}</td>
+                          <td><Outcome outcome={d.outcome} /></td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </section>
+            <section className="panel flush" aria-labelledby="reasons">
+              <div className="panel-head" style={{ padding: "16px 16px 0" }}><h3 id="reasons">By reason</h3></div>
+              {h.by_reason.length === 0 ? <div className="state"><p>No disputes in months 1–22.</p></div> : (
+                <div className="table-wrap">
+                  <table>
+                    <thead><tr><th>Reason</th><th className="r">Disputes</th><th className="r">Win rate</th><th className="r">Lost</th></tr></thead>
+                    <tbody>
+                      {h.by_reason.map((r) => (
+                        <tr key={r.reason}><td>{r.label}</td><td className="r">{r.disputes}</td><td className="r">{r.win_rate == null ? "–" : pct(r.win_rate)}</td><td className="r">{usd(r.usd_lost)}</td></tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </section>
+          </div>
+        </>
+      )}
+
+      {data && (
+        <section className="panel flush" aria-labelledby="uploaded">
+          <div className="panel-head" style={{ padding: "16px 16px 0" }}>
+            <h2 id="uploaded">Uploaded payments for this team</h2>
+            {u?.summary && <p className="num">{num(u.summary.payments)} payments · {num(u.summary.tiers.high)} high risk · {usd(u.summary.expected_loss_usd)} expected loss</p>}
+          </div>
+          {!u ? <div className="state"><p>No files scored in this browser tab yet. Scored payments for {team} appear here, costliest exposure first.</p></div>
+            : !u.summary ? <div className="state"><p>The uploaded files have no payments for {team}.</p></div> : (
+            <div className="table-wrap">
+              <table className="wide">
+                <thead><tr><th>Payment</th><th className="r">Amount</th><th>Dispute risk</th><th>Win if disputed</th><th className="r">Expected loss</th><th>Most useful action</th></tr></thead>
                 <tbody>
-                  {h.gaps.map((g) => (
-                    <tr key={g.item}>
-                      <td>{g.label}</td>
-                      <td className="num">{pct(g.share_missing)}</td>
-                      <td className="num">{pct(g.platform_missing)}</td>
-                      <td className="num">+{g.win_points_gain} pts</td>
-                      <td>{g.fix}</td>
+                  {u.payments.slice(0, 25).map((r) => (
+                    <tr key={r.payment_id}>
+                      <td><span className="mono">{r.payment_id}</span><span className="cell-sub">{r.collected_at?.slice(0, 10)}</span></td>
+                      <td className="r">{usd(r.amount_usd, 2)}</td>
+                      <td><Tier tier={r.dispute_risk_tier} /></td>
+                      <td>{r.payment_win_prob == null ? "Blank" : <Meter value={r.payment_win_prob} />}</td>
+                      <td className="r">{usd(r.expected_loss_usd, 2)}</td>
+                      <td style={{ minWidth: 260 }}><ActionList items={(r.payment_actions || []).concat(r.invoice_actions || []).slice(0, 1)} empty="Nothing to add" /></td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-            )}
-            <p className="muted small">Gain = average rise in the chance of winning a dispute across all the team's payments, estimated within teams (not by comparing careful teams with careless ones).</p>
-          </section>
-
-          <section className="card">
-            <h3>Disputes by reason</h3>
-            <table>
-              <thead><tr><th>Reason</th><th className="num">Disputes</th><th className="num">Won</th><th className="num">Lost</th><th className="num">Win rate</th><th className="num">$ lost</th></tr></thead>
-              <tbody>
-                {h.by_reason.map((r) => (
-                  <tr key={r.reason}><td>{r.label}</td><td className="num">{r.disputes}</td><td className="num">{r.won}</td><td className="num">{r.lost}</td><td className="num">{pct(r.win_rate)}</td><td className="num">{usd(r.usd_lost)}</td></tr>
-                ))}
-              </tbody>
-            </table>
-          </section>
-
-          <section className="card">
-            <h3>Recent disputes</h3>
-            <table>
-              <thead><tr><th>Dispute</th><th>Opened</th><th>Reason</th><th className="num">Amount</th><th>Responded</th><th>Outcome</th><th>Evidence submitted</th></tr></thead>
-              <tbody>
-                {h.recent_disputes.map((d) => (
-                  <tr key={d.dispute_id}>
-                    <td className="mono">{d.dispute_id}</td><td>{d.opened_at}</td><td>{d.reason}</td><td className="num">{usd(d.amount_usd, 2)}</td>
-                    <td>{d.responded ? "Yes" : <span className="warn">No</span>}</td>
-                    <td><span className={`badge out-${d.outcome}`}>{d.outcome}</span></td>
-                    <td className="small">{d.evidence.split(";").join(" · ")}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </section>
-        </>
-      )}
-
-      {u?.summary && (
-        <section className="card">
-          <h3>Uploaded payments for this team</h3>
-          <div className="stats">
-            <Stat label="Payments" value={num(u.summary.payments)} />
-            <Stat label="High risk" value={num(u.summary.tiers.high)} />
-            <Stat label="Expected loss" value={usd(u.summary.expected_loss_usd)} />
-          </div>
-          <table>
-            <thead><tr><th>Payment</th><th className="num">Amount</th><th>Risk</th><th className="num">Payment win</th><th className="num">Expected loss</th><th>Top action</th></tr></thead>
-            <tbody>
-              {u.payments.slice(0, 25).map((r) => (
-                <tr key={r.payment_id}>
-                  <td className="mono">{r.payment_id}</td><td className="num">{usd(r.amount_usd, 2)}</td><td><Tier tier={r.dispute_risk_tier} /></td>
-                  <td className="num"><Prob v={r.payment_win_prob} /></td><td className="num">{usd(r.expected_loss_usd, 2)}</td>
-                  <td><Actions items={(r.payment_actions || []).concat(r.invoice_actions || []).slice(0, 1)} empty="—" /></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {u.disputes && u.disputes.length > 0 && (
-            <>
-              <h3>Uploaded disputes</h3>
+            </div>
+          )}
+          {u?.disputes?.length > 0 && (
+            <div className="table-wrap" style={{ borderTop: "1px solid var(--line)" }}>
               <table>
-                <thead><tr><th>Dispute</th><th>Reason</th><th className="num">Amount</th><th className="num">Win chance</th><th>Advice</th></tr></thead>
+                <thead><tr><th>Uploaded dispute</th><th>Reason</th><th className="r">Amount</th><th>Win chance</th><th>Advice</th></tr></thead>
                 <tbody>
                   {u.disputes.map((d) => (
-                    <tr key={d.dispute_id}><td className="mono">{d.dispute_id}</td><td>{d.reason_label}</td><td className="num">{usd(d.amount_usd, 2)}</td><td className="num">{pct(d.win_prob)}</td><td><Rec rec={d.recommendation} /></td></tr>
+                    <tr key={d.dispute_id}><td className="mono">{d.dispute_id}</td><td>{d.reason_label}</td><td className="r">{usd(d.amount_usd, 2)}</td><td><Meter value={d.win_prob} /></td><td><Rec rec={d.recommendation} /></td></tr>
                   ))}
                 </tbody>
               </table>
-            </>
+            </div>
           )}
         </section>
       )}

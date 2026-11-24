@@ -1,105 +1,132 @@
-import React, { Fragment, useEffect, useState } from "react";
-import { get, usd } from "../api.js";
-import { Actions, Empty, Pager, Prob, Tier } from "../components.jsx";
+import React, { useEffect, useState } from "react";
+import { get, num, pct, usd } from "../api.js";
+import { ActionList, Drawer, EmptyState, ErrorBox, EvidenceList, EvidenceStrip, Figure, Loading, Meter, Pager, StripLegend, Tier } from "../components.jsx";
 
-export default function Payments({ session, meta, openTeam, goUpload }) {
-  const [filters, setFilters] = useState({ team: "", tier: "", q: "", sort: "expected_loss_usd" });
+function PaymentDrawer({ r, meta, onClose, openTeam }) {
+  const platform = meta?.totals?.dispute_rate;
+  return (
+    <Drawer title={`Payment ${r.payment_id}`} subtitle={`${usd(r.amount_usd, 2)} · ${r.payment_method} · collected ${r.collected_at}`} onClose={onClose}>
+      <section className="kv">
+        <Figure label="Chance of a dispute" value={pct(r.dispute_risk_score, 2)} note={<><Tier tier={r.dispute_risk_tier} />{platform ? ` platform average ${pct(platform, 2)}` : ""}</>} />
+        <Figure label="Expected loss" value={usd(r.expected_loss_usd, 2)} note="risk × what the team would lose if disputed" />
+        <Figure label="Win chance, invoice only" value={r.invoice_win_prob == null ? "Blank" : pct(r.invoice_win_prob)} note="judged before payment" />
+        <Figure label="Win chance, with payment" value={r.payment_win_prob == null ? "Blank" : pct(r.payment_win_prob)} note="once the card details are known" />
+      </section>
+      <section>
+        <h4>Evidence on file</h4>
+        <EvidenceList evidence={meta.evidence} present={r.evidence_present} />
+      </section>
+      <section>
+        <h4>Before payment: strengthen the invoice</h4>
+        <ActionList items={r.invoice_actions} empty="The invoice already has the evidence that moves the win chance." />
+      </section>
+      <section>
+        <h4>Now that it is paid: protect it</h4>
+        <ActionList items={r.payment_actions} empty="Nothing urgent for this payment." />
+        <p className="muted small" style={{ marginTop: 8 }}>Points = rise in the chance of winning if this payment is disputed, estimated within teams.</p>
+      </section>
+      <section>
+        <h4>Card</h4>
+        <p className="small">{r.payment_method}{r.card_country ? ` · issued in ${r.card_country}` : ""}{r.avs_result ? ` · AVS ${r.avs_result.replace("_", " ")}` : ""}{r.cvv_result ? ` · CVV ${r.cvv_result.replace("_", " ")}` : ""}</p>
+      </section>
+      <button className="btn btn-secondary" onClick={() => { onClose(); openTeam(r.team_id); }}>Open team {r.team_id}</button>
+    </Drawer>
+  );
+}
+
+export default function Payments({ session, meta, openTeam, goUpload, tier, setTier }) {
+  const [filters, setFilters] = useState({ team: "", q: "", sort: "expected_loss_usd" });
   const [page, setPage] = useState(1);
   const [data, setData] = useState(null);
   const [open, setOpen] = useState(null);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (!session.payments) return;
-    get("payments", { ...filters, page_no: page, size: 50 }).then(setData).catch((e) => setError(e.message));
-  }, [filters, page, session.payments]);
+  const load = () => {
+    setLoading(true); setError("");
+    get("payments", { ...filters, tier, page_no: page, size: 50 })
+      .then(setData).catch((e) => setError(e.message)).finally(() => setLoading(false));
+  };
+  useEffect(() => { if (session.payments) load(); }, [filters, tier, page, session.payments]);
 
   if (!session.payments)
-    return <Empty action={<button className="primary" onClick={goUpload}>Go to upload</button>}>Upload invoices, photos and payments to see per-payment predictions.</Empty>;
+    return <EmptyState title="No payments scored yet" action={<button className="btn btn-primary" onClick={goUpload}>Score files</button>}>
+      Upload a period's invoices, photos and payments to see each payment's dispute risk, win chance and the evidence worth adding.
+    </EmptyState>;
 
+  const s = session.payments;
   const setF = (k) => (e) => { setPage(1); setFilters((f) => ({ ...f, [k]: e.target.value })); };
 
   return (
     <div className="stack">
-      <div className="card">
-        <h2>Payments</h2>
-        <p className="muted">
-          <b>Invoice win</b>: chance of winning a dispute judged from the invoice before payment. <b>Payment win</b>: the same once the payment is collected.
-          <b> Risk</b>: chance this payment is disputed. <b>Expected loss</b> = risk × what the team would lose if disputed.
-        </p>
-        <div className="filters">
-          <select value={filters.team} onChange={setF("team")} aria-label="Team">
-            <option value="">All teams</option>
-            {meta?.teams.map((t) => <option key={t} value={t}>{meta.team_labels[t]}</option>)}
-          </select>
-          <select value={filters.tier} onChange={setF("tier")} aria-label="Risk tier">
-            <option value="">All tiers</option>
-            <option value="high">High risk</option>
-            <option value="medium">Medium risk</option>
-            <option value="low">Low risk</option>
-          </select>
-          <select value={filters.sort} onChange={setF("sort")} aria-label="Sort">
-            <option value="expected_loss_usd">Sort: expected loss</option>
-            <option value="dispute_risk_score">Sort: dispute risk</option>
-            <option value="amount_usd">Sort: amount</option>
-            <option value="payment_win_prob">Sort: weakest paperwork</option>
-          </select>
-          <input placeholder="Search payment or invoice ID" value={filters.q} onChange={setF("q")} aria-label="Search" />
+      <div className="page-head">
+        <div>
+          <h1>Payments</h1>
+          <p><b className="num">{num(s.tiers.high)}</b> of {num(s.payments)} payments are high risk. Together all payments carry <b className="num">{usd(s.expected_loss_usd)}</b> of expected dispute losses. Sorted by expected loss so the costliest exposure comes first.</p>
         </div>
+        <StripLegend />
       </div>
-      {error && <div className="error">{error}</div>}
-      <div className="card table-card">
-        <table>
-          <thead>
-            <tr>
-              <th>Payment</th><th>Team</th><th className="num">Amount</th><th>Method</th><th>Risk</th>
-              <th className="num">Risk %</th><th className="num">Invoice win</th><th className="num">Payment win</th><th className="num">Expected loss</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data?.rows.map((r) => (
-              <Fragment key={r.payment_id}>
-                <tr className="clickable" onClick={() => setOpen(open === r.payment_id ? null : r.payment_id)}
-                    aria-expanded={open === r.payment_id}>
-                  <td className="mono">{r.payment_id}</td>
-                  <td><button className="link" onClick={(e) => { e.stopPropagation(); openTeam(r.team_id); }}>{r.team_id}</button></td>
-                  <td className="num">{usd(r.amount_usd, 2)}</td>
-                  <td>{r.payment_method}</td>
-                  <td><Tier tier={r.dispute_risk_tier} /></td>
-                  <td className="num">{(r.dispute_risk_score * 100).toFixed(2)}%</td>
-                  <td className="num"><Prob v={r.invoice_win_prob} /></td>
-                  <td className="num"><Prob v={r.payment_win_prob} /></td>
-                  <td className="num">{usd(r.expected_loss_usd, 2)}</td>
+
+      <section className="panel flush" aria-label="Payments table">
+        <div className="toolbar">
+          <label>Team
+            <select value={filters.team} onChange={setF("team")}>
+              <option value="">All teams</option>
+              {meta?.teams.map((t) => <option key={t} value={t}>{meta.team_labels[t]}</option>)}
+            </select>
+          </label>
+          <label>Risk tier
+            <select value={tier} onChange={(e) => { setPage(1); setTier(e.target.value); }}>
+              <option value="">All tiers</option>
+              <option value="high">High risk</option>
+              <option value="medium">Medium risk</option>
+              <option value="low">Low risk</option>
+            </select>
+          </label>
+          <label>Sort by
+            <select value={filters.sort} onChange={setF("sort")}>
+              <option value="expected_loss_usd">Expected loss</option>
+              <option value="dispute_risk_score">Dispute risk</option>
+              <option value="amount_usd">Amount</option>
+              <option value="payment_win_prob">Weakest paperwork first</option>
+            </select>
+          </label>
+          <label>Find
+            <input type="search" placeholder="Payment or invoice ID" value={filters.q} onChange={setF("q")} />
+          </label>
+        </div>
+        {error && <div style={{ padding: 14 }}><ErrorBox message={error} onRetry={load} /></div>}
+        {!data && loading && <Loading what="payments" />}
+        {data && data.total === 0 && <div className="state"><h3>No payments match</h3><p>Clear the search or pick another team or tier.</p></div>}
+        {data && data.total > 0 && (
+          <div className="table-wrap" aria-busy={loading}>
+            <table className="wide">
+              <thead>
+                <tr>
+                  <th>Payment</th><th>Team</th><th className="r">Amount</th><th>Method</th><th>Evidence</th>
+                  <th>Dispute risk</th><th>Win if disputed</th><th className="r">Expected loss</th>
                 </tr>
-                {open === r.payment_id && (
-                  <tr className="detail">
-                    <td colSpan={9}>
-                      <div className="detail-grid">
-                        <div>
-                          <h4>Evidence on file</h4>
-                          <p>{r.evidence_present.length ? r.evidence_present.join(" · ") : "None"}</p>
-                          <p className="muted small">
-                            Card: {r.payment_method}{r.card_country ? ` · ${r.card_country}` : ""}{r.avs_result ? ` · AVS ${r.avs_result}` : ""}{r.cvv_result ? ` · CVV ${r.cvv_result}` : ""}
-                          </p>
-                        </div>
-                        <div>
-                          <h4>Before payment: strengthen the invoice</h4>
-                          <Actions items={r.invoice_actions} empty="Invoice already has the evidence that matters." />
-                        </div>
-                        <div>
-                          <h4>Now that it's paid: protect it</h4>
-                          <Actions items={r.payment_actions} empty="Nothing urgent." />
-                        </div>
-                      </div>
-                    </td>
+              </thead>
+              <tbody>
+                {data.rows.map((r) => (
+                  <tr key={r.payment_id} className={open?.payment_id === r.payment_id ? "row selected" : "row"} onClick={() => setOpen(r)}>
+                    <td><button className="id-btn" onClick={(e) => { e.stopPropagation(); setOpen(r); }}>{r.payment_id}</button><span className="cell-sub">{r.collected_at?.slice(0, 10)}</span></td>
+                    <td><button className="link-btn" onClick={(e) => { e.stopPropagation(); openTeam(r.team_id); }}>{r.team_id}</button></td>
+                    <td className="r">{usd(r.amount_usd, 2)}</td>
+                    <td>{r.payment_method}{(r.avs_result === "no_match" || r.cvv_result === "no_match") && <span className="cell-sub warn-text">card check failed</span>}</td>
+                    <td><EvidenceStrip evidence={meta?.evidence} present={r.evidence_present} /></td>
+                    <td><Tier tier={r.dispute_risk_tier} /><span className="cell-sub num">{pct(r.dispute_risk_score, 2)}</span></td>
+                    <td>{r.payment_win_prob == null ? <span className="muted">Blank</span> : <Meter value={r.payment_win_prob} />}</td>
+                    <td className="r"><b>{usd(r.expected_loss_usd, 2)}</b></td>
                   </tr>
-                )}
-              </Fragment>
-            ))}
-          </tbody>
-        </table>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
         <Pager data={data} page={page} setPage={setPage} />
-      </div>
+      </section>
+      {open && meta && <PaymentDrawer r={open} meta={meta} onClose={() => setOpen(null)} openTeam={openTeam} />}
     </div>
   );
 }

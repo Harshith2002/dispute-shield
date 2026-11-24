@@ -13,7 +13,7 @@ from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.responses import FileResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
-from config import ARTIFACTS, BACKEND
+from config import ARTIFACTS, BACKEND, DISPUTE_FEE
 from data import read_table
 from evidence import EVIDENCE_RULES
 from policies import POLICIES
@@ -84,8 +84,8 @@ PAY_COLS = ["payment_id", "invoice_id", "team_id", "collected_at", "amount_usd",
             "avs_result", "cvv_result", "invoice_win_prob", "payment_win_prob", "dispute_risk_score",
             "dispute_risk_tier", "expected_loss_usd", "evidence_present", "invoice_actions", "payment_actions"]
 DIS_COLS = ["dispute_id", "payment_id", "team_id", "opened_at", "reason", "reason_label", "amount_usd",
-            "merchant_responded", "evidence_submitted", "win_prob", "recommendation", "fight_value_usd",
-            "evidence_actions", "reason_guidance", "matched_payment"]
+            "merchant_responded", "evidence_submitted", "evidence_present", "win_prob", "recommendation",
+            "fight_value_usd", "evidence_actions", "reason_guidance", "matched_payment"]
 
 
 def present_evidence(P: pd.DataFrame) -> list:
@@ -119,7 +119,10 @@ def dispute_summary(D):
                           "fight": int((g.recommendation == "fight").sum()),
                           "amount_usd": round(float(g.amount_usd.sum()), 2),
                           "expected_usd_lost_if_fought": round(float(((1 - g.win_prob) * g.amount_usd).sum()), 2)})
+    f = D[D.recommendation == "fight"]
     return {"disputes": int(len(D)), "fight": int((D.recommendation == "fight").sum()),
+            "expected_recovery_usd": round(float((f.win_prob * (f.amount_usd + DISPUTE_FEE)).sum()), 2),
+            "amount_usd": round(float(D.amount_usd.sum()), 2),
             "accept": int((D.recommendation == "accept").sum()), "unmatched": int((~D.matched_payment).sum()),
             "by_reason": sorted(by_reason, key=lambda x: -x["disputes"])}
 
@@ -132,6 +135,7 @@ def meta():
             "team_labels": {k: f"{k} · {v['profession']} · {v['state']}" for k, v in APP["teams"].items()},
             "policies": [{"name": p.name, "label": p.label} for p in POLICIES],
             "reasons": [{"key": r.key, "label": r.label, "guidance": r.guidance} for r in REASONS],
+            "evidence": [{"item": r.item, "label": r.label} for r in EVIDENCE_RULES],
             "totals": APP["totals"], "models": APP["models"],
             "trained_through": scorer.b["trained_through"]}
 
@@ -170,6 +174,7 @@ async def upload_disputes(session: str = Form(...), disputes: UploadFile = File(
     d = await read_upload("disputes", disputes)
     D = scorer.score_disputes(d, s["P"])
     D["reason_label"] = D.reason.map(reason_label)
+    D["evidence_present"] = present_evidence(D)
     s["D"] = D
     return dispute_summary(D)
 

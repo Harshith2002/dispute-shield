@@ -1,95 +1,122 @@
 import React, { useEffect, useState } from "react";
 import { get, num, signed, usd } from "../api.js";
+import { ErrorBox, Loading } from "../components.jsx";
 
 const METRICS = [
-  ["disputes", "Disputes", (v) => num(v)],
-  ["disputes_lost", "Disputes lost", (v) => num(v)],
   ["usd_lost", "Dollars lost", (v) => usd(v)],
+  ["disputes_lost", "Disputes lost", (v) => num(v)],
+  ["disputes", "Disputes", (v) => num(v)],
 ];
+const CONF_WHY = {
+  high: "the direction holds in almost every resample and the range is tight",
+  medium: "the direction holds in most resamples but the size is uncertain",
+  low: "resamples disagree on the direction, so treat this as no reliable effect",
+};
 
-function Range({ m }) {
-  // position estimate and range on a scale that always includes zero
-  const lo = Math.min(m.low, 0), hi = Math.max(m.high, 0);
+function RangeChart({ meta, metric, fmt, selected, onSelect }) {
+  const rows = Object.entries(meta).map(([k, v]) => ({ key: k, label: v.label, ...v.metrics[metric] }));
+  const lo = Math.min(0, ...rows.map((r) => r.low)), hi = Math.max(0, ...rows.map((r) => r.high));
   const span = hi - lo || 1;
   const x = (v) => `${((v - lo) / span) * 100}%`;
   return (
-    <div className="range" aria-hidden="true">
-      <div className="range-zero" style={{ left: x(0) }} />
-      <div className="range-band" style={{ left: x(m.low), width: `${((m.high - m.low) / span) * 100}%` }} />
-      <div className="range-dot" style={{ left: x(m.estimate) }} />
-    </div>
+    <>
+      <div className="range-chart">
+        {rows.map((r) => (
+          <div key={r.key} className={r.key === selected ? "range-row active" : "range-row"}>
+            <button className="range-label" onClick={() => onSelect(r.key)} aria-pressed={r.key === selected}>{r.label}</button>
+            <div className="range-track" role="img" aria-label={`${r.label}: estimate ${signed(r.estimate, fmt)}, range ${signed(r.low, fmt)} to ${signed(r.high, fmt)}, ${r.confidence} confidence`}
+                 title={`Estimate ${signed(r.estimate, fmt)} · range ${signed(r.low, fmt)} to ${signed(r.high, fmt)} · ${r.confidence} confidence`}>
+              <div className="range-zero" style={{ left: x(0) }} />
+              <div className="range-band" style={{ left: x(r.low), width: `calc(${((r.high - r.low) / span) * 100}% + 2px)` }} />
+              <div className="range-dot" style={{ left: x(r.estimate) }} />
+            </div>
+            <span className="range-value">{signed(r.estimate, fmt)}</span>
+          </div>
+        ))}
+      </div>
+      <div className="range-chart" aria-hidden="true">
+        <span />
+        <div className="axis-note"><span>{signed(lo, fmt)}</span><span>0 = no change</span><span>{signed(hi, fmt)}</span></div>
+        <span />
+      </div>
+    </>
   );
 }
 
 export default function WhatIf() {
   const [data, setData] = useState(null);
   const [policy, setPolicy] = useState("");
+  const [metric, setMetric] = useState("usd_lost");
   const [error, setError] = useState("");
-  useEffect(() => {
-    get("whatif").then((d) => { setData(d); setPolicy(Object.keys(d.meta)[0]); }).catch((e) => setError(e.message));
-  }, []);
-  if (error) return <div className="error">{error}</div>;
-  if (!data) return <p className="muted">Loading…</p>;
+  const load = () => { setError(""); get("whatif").then((d) => { setData(d); setPolicy((p) => p || Object.keys(d.meta)[0]); }).catch((e) => setError(e.message)); };
+  useEffect(load, []);
+
+  if (error) return <ErrorBox message={error} onRetry={load} />;
+  if (!data) return <div className="panel"><Loading what="policy estimates" /></div>;
+
+  const fmt = METRICS.find((m) => m[0] === metric)[2];
+  const best = Object.values(data.meta).reduce((a, b) => (b.metrics.usd_lost.estimate < a.metrics.usd_lost.estimate ? b : a));
   const p = data.meta[policy];
 
   return (
     <div className="stack">
-      <section className="card">
-        <h2>What-if · months 1–22</h2>
-        <p className="muted">How disputes and losses would have changed if the policy had applied from November 2024. Negative means fewer.</p>
-        <div className="policy-picker" role="tablist">
-          {Object.entries(data.meta).map(([k, v]) => (
-            <button key={k} role="tab" aria-selected={k === policy} className={k === policy ? "tab active" : "tab"} onClick={() => setPolicy(k)}>{v.label}</button>
-          ))}
+      <div className="page-head">
+        <div>
+          <h1>Policy what-if</h1>
+          <p>What each policy would have changed had it applied from November 2024 to August 2026. {best.label} saves the most: an estimated <b className="num">{usd(-best.metrics.usd_lost.estimate)}</b> fewer dollars lost to disputes. Negative means fewer.</p>
+        </div>
+      </div>
+
+      <section className="panel" aria-labelledby="compare">
+        <div className="panel-head">
+          <h2 id="compare">Estimated change, with 90% range</h2>
+          <div className="seg" role="group" aria-label="Measure">
+            {METRICS.map(([k, label]) => <button key={k} aria-pressed={metric === k} onClick={() => setMetric(k)}>{label}</button>)}
+          </div>
+        </div>
+        <RangeChart meta={data.meta} metric={metric} fmt={fmt} selected={policy} onSelect={setPolicy} />
+        <div className="legend" style={{ marginTop: 14 }}>
+          <span><span className="swatch" style={{ background: "var(--chart)", borderRadius: "50%" }} />Estimate</span>
+          <span><span className="swatch" style={{ background: "var(--chart-soft)", border: "1px solid var(--chart)", width: 18 }} />Range (5th to 95th percentile)</span>
+          <span>Pick a policy for its detail</span>
         </div>
       </section>
 
-      <section className="card">
-        <h3>{p.label}</h3>
-        <p>{p.description}</p>
-        <p className="muted small">Applies to {num(p.affected_payments)} payments · side effect: {p.assumption} ({num(p.jobs_lost)} jobs).</p>
-        <div className="metric-grid">
-          {METRICS.map(([key, label, fmt]) => {
-            const m = p.metrics[key];
+      <section className="panel" aria-labelledby="policy">
+        <div className="panel-head">
+          <div>
+            <h2 id="policy">{p.label}</h2>
+            <p className="small" style={{ color: "var(--ink-2)", marginTop: 4 }}>{p.description}</p>
+          </div>
+          <p>Applies to {num(p.affected_payments)} payments · {p.assumption}</p>
+        </div>
+        <div className="grid-3">
+          {METRICS.map(([k, label, f]) => {
+            const m = p.metrics[k];
             return (
-              <div className="metric" key={key}>
-                <div className="stat-label">{label}</div>
-                <div className="stat-value">{signed(m.estimate, fmt)}</div>
-                <div className="muted small">range {signed(m.low, fmt)} to {signed(m.high, fmt)} · baseline {fmt(m.baseline)}</div>
-                <Range m={m} />
-                <div className={`conf conf-${m.confidence}`}>{m.confidence} confidence</div>
-                <div className="muted small">{Math.round(m.draws_same_sign * 100)}% of bootstrap draws agree on the direction. Without team controls: {signed(m.naive_no_team_controls, fmt)}.</div>
+              <div className="metric-card" key={k}>
+                <div className="figure-label">{label}</div>
+                <div className="figure">{signed(m.estimate, f)}</div>
+                <div className="small num">range {signed(m.low, f)} to {signed(m.high, f)}</div>
+                <div className="small muted num">baseline {f(m.baseline)}</div>
+                <div className={`small conf-${m.confidence}`} style={{ fontWeight: 700 }}>{m.confidence[0].toUpperCase() + m.confidence.slice(1)} confidence</div>
+                <div className="small muted">{Math.round(m.draws_same_sign * 100)}% of resamples agree on the direction: {CONF_WHY[m.confidence]}. Without team controls the estimate would be {signed(m.naive_no_team_controls, f)}.</div>
               </div>
             );
           })}
         </div>
       </section>
 
-      <section className="card">
-        <h3>How this is estimated</h3>
-        <ul className="plain">
-          <li>Two models on months 1–22: chance a payment is disputed, and chance a dispute is lost. Both control for each team's average paperwork habits, so a policy is credited only with the effect seen <i>within</i> teams, not with the fact that careful teams fill in more fields.</li>
-          <li>The policy changes the affected payments (e.g. adds the address), removes the jobs the brief says would be lost, and we add up the change in expected disputes, losses and dollars (amount + $25 fee).</li>
-          <li>Totals are scaled so the no-policy baseline matches what actually happened. The baseline counts still-open disputes at their predicted chance of being lost, so it is higher than the closed-only totals on the All teams page. Recent payments count only for the part of their 90-day dispute window that had passed.</li>
-          <li>Range: 5th–95th percentile over 30 refits on teams resampled with replacement, with the side-effect size varied 50%–150%.</li>
-        </ul>
-      </section>
-
-      <section className="card">
-        <h3>All policies</h3>
-        <table>
-          <thead><tr><th>Policy</th><th className="num">Disputes</th><th className="num">Disputes lost</th><th className="num">Dollars lost</th></tr></thead>
-          <tbody>
-            {Object.entries(data.meta).map(([k, v]) => (
-              <tr key={k}>
-                <td>{v.label}</td>
-                {METRICS.map(([key, , fmt]) => (
-                  <td className="num" key={key}>{signed(v.metrics[key].estimate, fmt)} <span className="muted small">({signed(v.metrics[key].low, fmt)} to {signed(v.metrics[key].high, fmt)})</span></td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <section className="panel">
+        <details className="method">
+          <summary>How these estimates are made</summary>
+          <ul>
+            <li>Two models on months 1–22: the chance a payment is disputed, and the chance a dispute is lost. Both control for each team's average paperwork habits, so a policy gets credit only for the effect seen within teams, not for the fact that careful teams fill in more fields.</li>
+            <li>The policy changes the affected payments (for example, adds the address), removes the jobs the brief says would leave ScanPay, and the change in expected disputes, losses and dollars (amount + $25 fee) is added up.</li>
+            <li>Totals are scaled so the no-policy baseline matches what happened. The baseline counts still-open disputes at their predicted chance of being lost, so it is higher than the closed-only totals on the Dispute reasons page. Recent payments count only for the part of their 90-day dispute window that had passed.</li>
+            <li>Range: 5th to 95th percentile over 30 refits on teams resampled with replacement, with the side-effect size varied from 50% to 150%.</li>
+          </ul>
+        </details>
       </section>
     </div>
   );
