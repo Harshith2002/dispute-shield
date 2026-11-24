@@ -1,3 +1,9 @@
+---
+title: Dispute Shield
+sdk: docker
+app_port: 8000
+---
+
 # Dispute Shield
 
 Predicts how exposed each ScanPay payment is to a chargeback and how likely the team is to win, advises fight or accept on each dispute, and estimates what product policies would have done to dispute losses over months 1–22.
