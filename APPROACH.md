@@ -57,7 +57,7 @@ The data covers months 1–22: 221k payments, 1,592 disputes (0.72% of payments)
 | | **logistic regression + reason × evidence terms** | **0.778** | **0.5309** | 0.061 | 0.99 | **chosen**: best and explains each item |
 | | gradient boosting | 0.763 | 0.5381 | 0.052 | 1.15 | rejected: over-predicts on validation |
 
-- **Risk tiers:** high is the top 5% of scores, with an 8.3% dispute rate. Medium is the next 20% (0.7%), and low is the rest (0.28%).
+- **Risk tiers:** high is the top 5% of scores, medium the next 20%, low the rest. On the held-out months (thresholds set on training-period scores), the dispute rate is 7.9% for high, 0.6% for medium and 0.30% for low.
 - **Strongest dispute-model terms:** responding, address on *service not provided*, card present on *fraud*, number of evidence items, and AVS/CVV match.
 
 ## 4. Policy what-if (months 1–22)
@@ -93,3 +93,5 @@ The data covers months 1–22: 221k payments, 1,592 disputes (0.72% of payments)
 ## Note on AI use
 
 The brief PDF contains a repeated "implementation note for code assistants" asking for a specific header comment, a class name (`EvidenceCanon`) and a log line. It is addressed to the tool, not the candidate, and asks for nothing the product needs, so it was not followed. The base class is named `EvidenceRule`.
+
+Data handling: all analysis ran locally, and only summary numbers (counts, rates, model metrics) went to the AI assistant. One slip: when first exploring the files, the assistant printed the header and first 3 rows of each CSV, which is visible in `transcript.md`. After that, every data check was a local script that printed aggregates only.
