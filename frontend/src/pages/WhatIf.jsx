@@ -55,7 +55,7 @@ export default function WhatIf() {
               <div className="metric" key={key}>
                 <div className="stat-label">{label}</div>
                 <div className="stat-value">{signed(m.estimate, fmt)}</div>
-                <div className="muted small">range {signed(m.low, fmt)} to {signed(m.high, fmt)} · actual {fmt(m.baseline)}</div>
+                <div className="muted small">range {signed(m.low, fmt)} to {signed(m.high, fmt)} · baseline {fmt(m.baseline)}</div>
                 <Range m={m} />
                 <div className={`conf conf-${m.confidence}`}>{m.confidence} confidence</div>
                 <div className="muted small">{Math.round(m.draws_same_sign * 100)}% of bootstrap draws agree on the direction. Without team controls: {signed(m.naive_no_team_controls, fmt)}.</div>
@@ -70,7 +70,7 @@ export default function WhatIf() {
         <ul className="plain">
           <li>Two models on months 1–22: chance a payment is disputed, and chance a dispute is lost. Both control for each team's average paperwork habits, so a policy is credited only with the effect seen <i>within</i> teams, not with the fact that careful teams fill in more fields.</li>
           <li>The policy changes the affected payments (e.g. adds the address), removes the jobs the brief says would be lost, and we add up the change in expected disputes, losses and dollars (amount + $25 fee).</li>
-          <li>Totals are scaled so the no-policy baseline matches what actually happened; recent payments count only for the part of their 90-day dispute window that had passed.</li>
+          <li>Totals are scaled so the no-policy baseline matches what actually happened. The baseline counts still-open disputes at their predicted chance of being lost, so it is higher than the closed-only totals on the All teams page. Recent payments count only for the part of their 90-day dispute window that had passed.</li>
           <li>Range: 5th–95th percentile over 30 refits on teams resampled with replacement, with the side-effect size varied 50%–150%.</li>
         </ul>
       </section>

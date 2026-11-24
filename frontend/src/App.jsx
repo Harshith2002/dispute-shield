@@ -43,7 +43,7 @@ export default function App() {
           <div>
             <h1>Dispute Shield</h1>
             <p className="muted small">
-              Models trained on months 1–22{meta ? ` (through ${meta.trained_through})` : ""}. Uploads are scored, never used for training.
+              Models trained on months 1–22 (Nov 2024 – Aug 2026). Uploads are scored, never used for training.
             </p>
           </div>
         </div>

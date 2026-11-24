@@ -7,7 +7,7 @@ function FilePick({ name, file, setFile }) {
     <label className="file">
       <span className="file-name">{name}.csv</span>
       <input type="file" accept=".csv,text/csv" onChange={(e) => setFile(e.target.files[0] || null)} />
-      <span className={file ? "file-chosen" : "muted small"}>{file ? `${file.name} · ${(file.size / 1e6).toFixed(1)} MB` : "Choose file"}</span>
+      <span className={file ? "file-chosen" : "muted small"}>{file ? `${file.name} · ${file.size < 1e6 ? `${Math.max(1, Math.round(file.size / 1e3))} KB` : `${(file.size / 1e6).toFixed(1)} MB`}` : "Choose file"}</span>
     </label>
   );
 }
