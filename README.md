@@ -60,8 +60,8 @@ Uploads are scored with the frozen months 1–22 models and never used for train
 
 The repo root contains a `Dockerfile` that builds one container: it compiles the frontend, then runs FastAPI with `uvicorn` on `$PORT`.
 
-- **Render:** create a Web Service from the repo with runtime Docker. The Starter plan never sleeps.
-- **Hugging Face Spaces:** create a Docker Space and add `app_port: 8000` to the Space's README front matter (Spaces default to port 7860). Free Spaces sleep after about 48 hours without visits.
+- **Render:** create a Web Service from the repo with runtime Docker. The free plan (512 MB) sleeps after 15 minutes idle and wakes on the next visit in about a minute; the Starter plan never sleeps. `MAX_SESSIONS` in `api.py` keeps memory under 512 MB.
+- **Hugging Face Spaces:** Docker Spaces need a PRO subscription; the front matter at the top of this README configures one (port 8000).
 
 ## Extending
 

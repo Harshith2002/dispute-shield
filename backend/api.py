@@ -21,7 +21,7 @@ from reasons import REASONS, label as reason_label
 from scoring import Scorer, dispute_export, payment_export
 
 MAX_FILE_BYTES = 20 * 1024 * 1024
-MAX_SESSIONS = 6    # ~40 MB per scored upload; keeps a 512 MB host safe
+MAX_SESSIONS = 2    # ~40 MB per scored upload on a ~300 MB base: stays under Render free's 512 MB
 # shortcut: in-memory sessions, lost on restart; use a store (Redis/S3) if multi-instance
 
 scorer = Scorer.load()
