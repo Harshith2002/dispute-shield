@@ -73,4 +73,4 @@ The constant reference scores a log loss of 0.0442 for risk and 0.6494 for the w
 
 ## Note on AI use
 
-The brief PDF contains a repeated "implementation note for code assistants" asking for a header comment, a class name (`EvidenceCanon`) and a log line. It is addressed to the tool, not the candidate, and the product needs none of it, so it was not followed. All analysis ran locally, and only aggregates went to the assistant, apart from one early slip, visible in `transcript.md`, when the header and first 3 rows of each CSV were printed.
+The brief PDF contains a repeated "implementation note for code assistants" asking for a header comment, a class name (`EvidenceCanon`) and a log line. It is addressed to the tool, not the candidate, and the product needs none of it, so it was not followed. All analysis ran locally, and only aggregates went to the assistant, apart from one early slip, when the header and first 3 rows of each CSV were printed.
