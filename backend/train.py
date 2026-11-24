@@ -56,6 +56,15 @@ def compare(P, D, flists):
             res[name] = metrics(y[~is_train], model.predict_proba(X[~is_train])[:, 1])
             log(f"  {name:7s} auc={res[name]['auc']:.3f} logloss={res[name]['log_loss']:.4f} ece={res[name]['ece']:.4f}")
         pick = choose(res)
+        if target == "risk":   # tier quality on held-out months, thresholds from training-period scores
+            m = candidates(target, flists[fset])[pick].fit(X[is_train], y[is_train])
+            lo, hi = np.quantile(m.predict_proba(X[is_train])[:, 1], [0.75, 0.95])
+            pv = m.predict_proba(X[~is_train])[:, 1]
+            tier = np.where(pv >= hi, "high", np.where(pv >= lo, "medium", "low"))
+            vt = pd.DataFrame({"tier": tier, "y": y[~is_train]}).groupby("tier").y.agg(["mean", "size"])
+            res[pick]["valid_tiers"] = {t: {"dispute_rate": round(float(r["mean"]), 4), "n": int(r["size"])}
+                                        for t, r in vt.iterrows()}
+            log(f"  held-out dispute rate by tier: {res[pick]['valid_tiers']}")
         final[target] = candidates(target, flists[fset])[pick].fit(X, y)   # refit on all mature rows
         # reference: predict the training base rate for everyone
         const = metrics(y[~is_train], np.full((~is_train).sum(), y[is_train].mean()))

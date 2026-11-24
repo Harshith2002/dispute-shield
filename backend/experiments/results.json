@@ -32,7 +32,21 @@
           "log_loss": 0.03415119452582004,
           "brier": 0.006528286003677548,
           "ece": 0.0005785055923224955,
-          "pred_over_actual": 1.0111610406547753
+          "pred_over_actual": 1.0111610406547753,
+          "valid_tiers": {
+            "high": {
+              "dispute_rate": 0.0792,
+              "n": 2777
+            },
+            "low": {
+              "dispute_rate": 0.003,
+              "n": 39991
+            },
+            "medium": {
+              "dispute_rate": 0.006,
+              "n": 11238
+            }
+          }
         }
       },
       "constant": {

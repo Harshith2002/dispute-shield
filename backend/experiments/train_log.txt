@@ -1,62 +1,63 @@
-13:36:20 loading data
-13:36:25 building as-of features
-13:36:28 risk: train 128671 rows, valid 54006 rows, positives 1406
-13:36:29   lookup  auc=0.768 logloss=0.0364 ece=0.0008
-13:36:30   logreg  auc=0.786 logloss=0.0356 ece=0.0015
-13:36:50   gbm     auc=0.798 logloss=0.0342 ece=0.0006
-13:37:16   constant logloss=0.0442  (train rate 0.0078, valid rate 0.0075)
-13:37:16 win_invoice: train 829 rows, valid 492 rows, positives 427
-13:37:16   lookup  auc=0.630 logloss=0.6196 ece=0.0736
-13:37:16   logreg  auc=0.620 logloss=0.6454 ece=0.0899
-13:37:17   gbm     auc=0.613 logloss=0.6323 ece=0.0491
-13:37:17   constant logloss=0.6494  (train rate 0.3088, valid rate 0.3476)
-13:37:17 win_payment: train 829 rows, valid 492 rows, positives 427
-13:37:17   lookup  auc=0.641 logloss=0.6156 ece=0.0609
-13:37:17   logreg  auc=0.622 logloss=0.6422 ece=0.0965
-13:37:19   gbm     auc=0.625 logloss=0.6304 ece=0.0564
-13:37:19   constant logloss=0.6494  (train rate 0.3088, valid rate 0.3476)
-13:37:19 win_dispute: train 829 rows, valid 492 rows, positives 427
-13:37:19   lookup  auc=0.746 logloss=0.5636 ece=0.0773
-13:37:19   logreg  auc=0.778 logloss=0.5309 ece=0.0611
-13:37:21   gbm     auc=0.763 logloss=0.5381 ece=0.0521
-13:37:21   constant logloss=0.6494  (train rate 0.3088, valid rate 0.3476)
-13:37:25 what-if: fitting policy models + 30 bootstrap draws
-13:37:42   what-if bootstrap 1/30
-13:37:48   what-if bootstrap 2/30
-13:37:53   what-if bootstrap 3/30
-13:37:59   what-if bootstrap 4/30
-13:38:04   what-if bootstrap 5/30
-13:38:10   what-if bootstrap 6/30
-13:38:15   what-if bootstrap 7/30
-13:38:21   what-if bootstrap 8/30
-13:38:26   what-if bootstrap 9/30
-13:38:31   what-if bootstrap 10/30
-13:38:37   what-if bootstrap 11/30
-13:38:42   what-if bootstrap 12/30
-13:38:48   what-if bootstrap 13/30
-13:38:53   what-if bootstrap 14/30
-13:38:59   what-if bootstrap 15/30
-13:39:04   what-if bootstrap 16/30
-13:39:10   what-if bootstrap 17/30
-13:39:16   what-if bootstrap 18/30
-13:39:21   what-if bootstrap 19/30
-13:39:27   what-if bootstrap 20/30
-13:39:33   what-if bootstrap 21/30
-13:39:40   what-if bootstrap 22/30
-13:39:49   what-if bootstrap 23/30
-13:39:56   what-if bootstrap 24/30
-13:40:02   what-if bootstrap 25/30
-13:40:08   what-if bootstrap 26/30
-13:40:14   what-if bootstrap 27/30
-13:40:20   what-if bootstrap 28/30
-13:40:25   what-if bootstrap 29/30
-13:40:32   what-if bootstrap 30/30
-13:40:32 models saved; chosen={'risk': 'gbm', 'win_invoice': 'lookup', 'win_payment': 'lookup', 'win_dispute': 'logreg'}; blank=[]; tiers=[0.00565055792823369, 0.019565847469103392]
-13:40:32 dispute rate by tier (in-sample):
+13:51:09 loading data
+13:51:14 building as-of features
+13:51:17 risk: train 128671 rows, valid 54006 rows, positives 1406
+13:51:18   lookup  auc=0.768 logloss=0.0364 ece=0.0008
+13:51:19   logreg  auc=0.786 logloss=0.0356 ece=0.0015
+13:51:39   gbm     auc=0.798 logloss=0.0342 ece=0.0006
+13:52:02   held-out dispute rate by tier: {'high': {'dispute_rate': 0.0792, 'n': 2777}, 'low': {'dispute_rate': 0.003, 'n': 39991}, 'medium': {'dispute_rate': 0.006, 'n': 11238}}
+13:52:27   constant logloss=0.0442  (train rate 0.0078, valid rate 0.0075)
+13:52:27 win_invoice: train 829 rows, valid 492 rows, positives 427
+13:52:27   lookup  auc=0.630 logloss=0.6196 ece=0.0736
+13:52:27   logreg  auc=0.620 logloss=0.6454 ece=0.0899
+13:52:28   gbm     auc=0.613 logloss=0.6323 ece=0.0491
+13:52:28   constant logloss=0.6494  (train rate 0.3088, valid rate 0.3476)
+13:52:29 win_payment: train 829 rows, valid 492 rows, positives 427
+13:52:29   lookup  auc=0.641 logloss=0.6156 ece=0.0609
+13:52:29   logreg  auc=0.622 logloss=0.6422 ece=0.0965
+13:52:30   gbm     auc=0.625 logloss=0.6304 ece=0.0564
+13:52:30   constant logloss=0.6494  (train rate 0.3088, valid rate 0.3476)
+13:52:30 win_dispute: train 829 rows, valid 492 rows, positives 427
+13:52:31   lookup  auc=0.746 logloss=0.5636 ece=0.0773
+13:52:31   logreg  auc=0.778 logloss=0.5309 ece=0.0611
+13:52:33   gbm     auc=0.763 logloss=0.5381 ece=0.0521
+13:52:33   constant logloss=0.6494  (train rate 0.3088, valid rate 0.3476)
+13:52:36 what-if: fitting policy models + 30 bootstrap draws
+13:52:53   what-if bootstrap 1/30
+13:52:59   what-if bootstrap 2/30
+13:53:04   what-if bootstrap 3/30
+13:53:10   what-if bootstrap 4/30
+13:53:16   what-if bootstrap 5/30
+13:53:21   what-if bootstrap 6/30
+13:53:27   what-if bootstrap 7/30
+13:53:32   what-if bootstrap 8/30
+13:53:38   what-if bootstrap 9/30
+13:53:44   what-if bootstrap 10/30
+13:53:50   what-if bootstrap 11/30
+13:53:58   what-if bootstrap 12/30
+13:54:04   what-if bootstrap 13/30
+13:54:10   what-if bootstrap 14/30
+13:54:15   what-if bootstrap 15/30
+13:54:21   what-if bootstrap 16/30
+13:54:27   what-if bootstrap 17/30
+13:54:32   what-if bootstrap 18/30
+13:54:38   what-if bootstrap 19/30
+13:54:44   what-if bootstrap 20/30
+13:54:49   what-if bootstrap 21/30
+13:54:55   what-if bootstrap 22/30
+13:55:01   what-if bootstrap 23/30
+13:55:06   what-if bootstrap 24/30
+13:55:12   what-if bootstrap 25/30
+13:55:18   what-if bootstrap 26/30
+13:55:23   what-if bootstrap 27/30
+13:55:29   what-if bootstrap 28/30
+13:55:35   what-if bootstrap 29/30
+13:55:40   what-if bootstrap 30/30
+13:55:41 models saved; chosen={'risk': 'gbm', 'win_invoice': 'lookup', 'win_payment': 'lookup', 'win_dispute': 'logreg'}; blank=[]; tiers=[0.00565055792823369, 0.019565847469103392]
+13:55:41 dispute rate by tier (in-sample):
             mean    size
 tier                    
 high    0.083096    9134
 low     0.002839  137007
 medium  0.007062   36536
-13:40:32 app data
-13:40:45 done
+13:55:41 app data
+13:55:51 done
