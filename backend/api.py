@@ -21,7 +21,8 @@ from reasons import REASONS, label as reason_label
 from scoring import Scorer, dispute_export, payment_export
 
 MAX_FILE_BYTES = 20 * 1024 * 1024
-MAX_SESSIONS = 20   # shortcut: in-memory sessions, lost on restart; use a store (Redis/S3) if multi-instance
+MAX_SESSIONS = 6    # ~40 MB per scored upload; keeps a 512 MB host safe
+# shortcut: in-memory sessions, lost on restart; use a store (Redis/S3) if multi-instance
 
 scorer = Scorer.load()
 APP = json.loads((ARTIFACTS / "app_data.json").read_text(encoding="utf-8"))
