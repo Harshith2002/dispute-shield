@@ -59,6 +59,7 @@
 
 * { box-sizing: border-box; }
 html, body { margin: 0; }
+html { scrollbar-gutter: stable; }   /* short and long pages keep the same width, so content never jumps sideways */
 body {
   background: var(--paper); color: var(--ink); font-family: var(--font);
   font-size: 15px; line-height: 1.5; -webkit-font-smoothing: antialiased;
@@ -110,7 +111,12 @@ button { font: inherit; color: inherit; }
 
 .subnav { display: inline-flex; gap: 4px; padding: 4px; margin-bottom: 22px; background: var(--surface-2); border-radius: var(--radius-m); max-width: 100%; overflow-x: auto; }
 .subnav button { border: 0; background: none; padding: 8px 16px; min-height: 40px; border-radius: var(--radius-s); font-size: 14px; font-weight: 600; color: var(--ink-2); white-space: nowrap; }
-.subnav button:hover { color: var(--ink); }
+.subnav button:hover:not(:disabled) { color: var(--ink); }
+.subnav button:disabled { color: var(--muted); opacity: 0.6; }
+.next-step {
+  display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap;
+  padding: 14px 16px; border: 1px solid var(--brand); background: var(--brand-soft); border-radius: var(--radius-m); font-size: 14px;
+}
 .subnav button[aria-current="page"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(24, 32, 28, 0.12); }
 .subnav .count { margin-left: 6px; font-size: 12px; color: var(--muted); font-weight: 500; }
 

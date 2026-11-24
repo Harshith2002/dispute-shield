@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { get, num, signed, usd } from "../api.js";
+import { getCached, num, peek, signed, usd } from "../api.js";
 import { ErrorBox, Loading } from "../components.jsx";
 
 const METRICS = [
@@ -44,11 +44,11 @@ function RangeChart({ meta, metric, fmt, selected, onSelect }) {
 }
 
 export default function WhatIf() {
-  const [data, setData] = useState(null);
-  const [policy, setPolicy] = useState("");
+  const [data, setData] = useState(() => peek("whatif"));
+  const [policy, setPolicy] = useState(() => Object.keys(peek("whatif")?.meta || {})[0] || "");
   const [metric, setMetric] = useState("usd_lost");
   const [error, setError] = useState("");
-  const load = () => { setError(""); get("whatif").then((d) => { setData(d); setPolicy((p) => p || Object.keys(d.meta)[0]); }).catch((e) => setError(e.message)); };
+  const load = () => { setError(""); getCached("whatif").then((d) => { setData(d); setPolicy((p) => p || Object.keys(d.meta)[0]); }).catch((e) => setError(e.message)); };
   useEffect(load, []);
 
   if (error) return <ErrorBox message={error} onRetry={load} />;

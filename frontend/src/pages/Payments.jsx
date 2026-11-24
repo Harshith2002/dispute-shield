@@ -67,6 +67,13 @@ export default function Payments({ session, meta, openTeam, goUpload, tier, setT
         <StripLegend />
       </div>
 
+      {!session.disputes && (
+        <div className="next-step" role="note">
+          <span><b>Next:</b> upload this period's disputes for fight-or-accept advice on each one. They can come later; these payment scores are final.</span>
+          <button className="btn btn-primary" onClick={goUpload}>Upload disputes</button>
+        </div>
+      )}
+
       <section className="panel flush" aria-label="Payments table">
         <div className="toolbar">
           <label>Team

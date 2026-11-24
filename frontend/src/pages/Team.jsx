@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { get, num, pct, usd } from "../api.js";
+import { getCached, num, peek, pct, usd } from "../api.js";
 import { ActionList, ErrorBox, Figure, Loading, Meter, Outcome, Rec, Tier } from "../components.jsx";
 
 function Gaps({ gaps }) {
@@ -27,7 +27,8 @@ function Gaps({ gaps }) {
 }
 
 export default function Team({ meta, team, setTeam }) {
-  const [data, setData] = useState(null);
+  const teamPath = (t) => `teams/${encodeURIComponent(t)}`;
+  const [data, setData] = useState(() => (team ? peek(teamPath(team)) : null));
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -35,7 +36,7 @@ export default function Team({ meta, team, setTeam }) {
   const load = () => {
     if (!team) return;
     setLoading(true); setError("");
-    get(`teams/${encodeURIComponent(team)}`).then(setData).catch((e) => { setData(null); setError(e.message); }).finally(() => setLoading(false));
+    getCached(teamPath(team)).then(setData).catch((e) => { setData(null); setError(e.message); }).finally(() => setLoading(false));
   };
   useEffect(load, [team]);
 

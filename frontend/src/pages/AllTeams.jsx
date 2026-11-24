@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { get, num, pct, usd } from "../api.js";
+import { getCached, num, peek, pct, usd } from "../api.js";
 import { ErrorBox, Figure, HBarChart, Loading } from "../components.jsx";
 
 export default function AllTeams({ session }) {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState(() => peek("overview"));
   const [error, setError] = useState("");
-  const load = () => { setError(""); get("overview").then(setData).catch((e) => setError(e.message)); };
+  const load = () => { setError(""); getCached("overview").then(setData).catch((e) => setError(e.message)); };
   useEffect(load, [session.disputes]);
 
   if (error) return <ErrorBox message={error} onRetry={load} />;

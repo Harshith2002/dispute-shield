@@ -19,7 +19,7 @@ function Slot({ name, hint, file, onPick }) {
   );
 }
 
-export default function Upload({ session, onChange, meta, openPayments, openDisputes }) {
+export default function Upload({ session, onChange, onScored, meta, openPayments, openDisputes }) {
   const [files, setFiles] = useState({});
   const [busy, setBusy] = useState("");
   const [error, setError] = useState("");
@@ -59,6 +59,7 @@ export default function Upload({ session, onChange, meta, openPayments, openDisp
       }
       await onChange();
       if (step === "payments") setRedo(false);
+      onScored(step);
     } catch (e) {
       setError(e.message);
     } finally {

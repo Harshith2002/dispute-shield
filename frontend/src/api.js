@@ -33,6 +33,17 @@ export function get(path, params = {}) {
   return fetch(`/api/${path}?${q}`).then(handle);
 }
 
+// Read-only views (history, what-if, team pages) are cached so revisiting a tab shows data instantly
+// instead of a loading flash. Any upload clears the cache, since team and reason pages include uploaded data.
+const cache = new Map();
+const keyOf = (path, params) => `${path}?${JSON.stringify(params)}`;
+export const peek = (path, params = {}) => cache.get(keyOf(path, params)) ?? null;
+export function getCached(path, params = {}) {
+  const k = keyOf(path, params);
+  return cache.has(k) ? Promise.resolve(cache.get(k)) : get(path, params).then((v) => (cache.set(k, v), v));
+}
+export const clearCache = () => cache.clear();
+
 export function upload(path, files) {
   const form = new FormData();
   form.append("session", SESSION);

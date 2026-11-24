@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { get, num } from "./api.js";
+import { clearCache, get, getCached, num } from "./api.js";
 import { ErrorBox } from "./components.jsx";
 import Upload from "./pages/Upload.jsx";
 import Payments from "./pages/Payments.jsx";
@@ -8,10 +8,9 @@ import Team from "./pages/Team.jsx";
 import AllTeams from "./pages/AllTeams.jsx";
 import WhatIf from "./pages/WhatIf.jsx";
 
-// Three sections: upload, what the upload produced, and the months 1-22 history the models learned from.
+// Two sections: the period being scored (upload and its results), and the months 1-22 history the models learned from.
 const SECTIONS = [
-  { key: "upload", label: "Score files", views: [["upload", "Score files"]] },
-  { key: "results", label: "Results", views: [["payments", "Payments"], ["disputes", "Disputes"]] },
+  { key: "period", label: "Score files", views: [["upload", "Upload"], ["payments", "Payments"], ["disputes", "Disputes"]] },
   { key: "history", label: "Months 1–22", views: [["team", "Teams"], ["all", "Dispute reasons"], ["whatif", "Policy what-if"]] },
 ];
 const sectionOf = (view) => SECTIONS.find((s) => s.views.some(([v]) => v === view));
@@ -30,10 +29,12 @@ export default function App() {
   const [team, setTeam] = useState("");
   const [paymentTier, setPaymentTier] = useState("");
   const [theme, setTheme] = useState(currentTheme);
+  // remember the last sub-tab per section, so switching sections returns where you were
+  const [lastView, setLastView] = useState({ period: "upload", history: "team" });
 
-  const loadMeta = () => { setMetaError(""); get("meta").then(setMeta).catch((e) => setMetaError(e.message)); };
-  const refresh = () => get("session").then(setSession).catch(() => {});
-  useEffect(() => { loadMeta(); refresh(); }, []);
+  const loadMeta = () => { setMetaError(""); getCached("meta").then(setMeta).catch((e) => setMetaError(e.message)); };
+  const refresh = () => { clearCache(); return get("session").then(setSession).catch(() => {}); };
+  useEffect(() => { loadMeta(); get("session").then(setSession).catch(() => {}); }, []);
 
   const toggleTheme = () => {
     const next = theme === "dark" ? "light" : "dark";
@@ -42,14 +43,17 @@ export default function App() {
     setTheme(next);
   };
 
-  // remember the last sub-tab per section, so switching sections returns where you were
-  const [lastView, setLastView] = useState({ upload: "upload", results: "payments", history: "team" });
   const go = (k) => { setTab(k); setLastView((l) => ({ ...l, [sectionOf(k).key]: k })); window.scrollTo(0, 0); };
-  const section = sectionOf(tab);
   const openTeam = (id) => { setTeam(id); go("team"); };
   const openPayments = (tier = "") => { setPaymentTier(tier); go("payments"); };
+  // after scoring, take the user straight to what was just scored
+  const onScored = (step) => (step === "payments" ? openPayments("") : go("disputes"));
 
   const p = session.payments, d = session.disputes;
+  const section = sectionOf(tab);
+  const ready = { upload: true, payments: !!p, disputes: !!d, team: true, all: true, whatif: true };
+  const why = { payments: "Score payments first", disputes: "Score disputes first" };
+  const count = { payments: p && num(p.payments), disputes: d && num(d.disputes) };
 
   return (
     <>
@@ -79,19 +83,18 @@ export default function App() {
         </div>
       </header>
       <main>
-        {section.views.length > 1 && (
-          <nav className="subnav" aria-label={`${section.label} views`}>
-            {section.views.map(([k, label]) => (
-              <button key={k} onClick={() => go(k)} aria-current={tab === k ? "page" : undefined}>
-                {label}
-                {k === "payments" && p && <span className="count num">{num(p.payments)}</span>}
-                {k === "disputes" && d && <span className="count num">{num(d.disputes)}</span>}
-              </button>
-            ))}
-          </nav>
-        )}
+        <nav className="subnav" aria-label={`${section.label} views`}>
+          {section.views.map(([k, label]) => (
+            <button key={k} onClick={() => go(k)} disabled={!ready[k]} title={ready[k] ? undefined : why[k]}
+                    aria-current={tab === k ? "page" : undefined}>
+              {label}
+              {count[k] && <span className="count num">{count[k]}</span>}
+              {!ready[k] && <span className="sr-only"> ({why[k]})</span>}
+            </button>
+          ))}
+        </nav>
         {metaError && <div style={{ marginBottom: 16 }}><ErrorBox message={`Could not reach the Dispute Shield server (${metaError}).`} onRetry={loadMeta} /></div>}
-        {tab === "upload" && <Upload session={session} onChange={refresh} meta={meta} openPayments={openPayments} openDisputes={() => go("disputes")} />}
+        {tab === "upload" && <Upload session={session} onChange={refresh} onScored={onScored} meta={meta} openPayments={openPayments} openDisputes={() => go("disputes")} />}
         {tab === "payments" && <Payments session={session} meta={meta} openTeam={openTeam} goUpload={() => go("upload")} tier={paymentTier} setTier={setPaymentTier} />}
         {tab === "disputes" && <Disputes session={session} meta={meta} openTeam={openTeam} goUpload={() => go("upload")} />}
         {tab === "team" && <Team meta={meta} team={team} setTeam={setTeam} />}
