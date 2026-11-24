@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { exportUrl, num, pct, upload, usd } from "../api.js";
-import { ErrorBox, Figure, TierBar } from "../components.jsx";
+import { exportUrl, num, upload } from "../api.js";
+import { ErrorBox } from "../components.jsx";
 
 const STEP1 = ["invoices", "photos", "payments"];
 const ALL = [...STEP1, "disputes"];
@@ -19,7 +19,7 @@ function Slot({ name, hint, file, onPick }) {
   );
 }
 
-export default function Upload({ session, onChange, onScored, meta, openPayments, openDisputes }) {
+export default function Upload({ session, onChange, onScored, openPayments, openDisputes }) {
   const [files, setFiles] = useState({});
   const [busy, setBusy] = useState("");
   const [error, setError] = useState("");
@@ -97,7 +97,7 @@ export default function Upload({ session, onChange, onScored, meta, openPayments
     <section className="panel step" aria-labelledby="step2">
       <div className="step-num">Step 2 of 2</div>
       <h2 id="step2">Upload disputes</h2>
-      <p className="muted small" style={{ marginTop: 6 }}>Gives every dispute raised on these payments a win chance with the evidence submitted, and whether fighting is worth the $15 it costs. If the disputes are not in yet, the payment results below are ready to use now.</p>
+      <p className="muted small" style={{ marginTop: 6 }}>Gives every dispute raised on these payments a win chance with the evidence submitted, and whether fighting is worth the $15 it costs. If the disputes are not in yet, the payment results are ready on the Payments tab.</p>
       <div className="drop-list">
         <Slot name="disputes" hint="Disputes raised on the step 1 payments, without outcomes" file={files.disputes} onPick={pick("disputes")} />
       </div>
@@ -135,66 +135,20 @@ export default function Upload({ session, onChange, onScored, meta, openPayments
 
       {stage === 1 && step1}
       {stage === 1 && !p && (
-        <p className="muted small">The policy what-if needs no upload: see the Policy what-if tab, or <a href={exportUrl("whatif_results")} download>download whatif_results.csv</a>.</p>
+        <p className="muted small">The policy what-if needs no upload: it is under Months 1–22, or <a href={exportUrl("whatif_results")} download>download whatif_results.csv</a> now.</p>
       )}
       {stage === 2 && step2}
 
-      {stage > 1 && p && (
-        <section className="panel" aria-labelledby="res1">
-          <div className="panel-head">
-            <h2 id="res1">Payments scored</h2>
-            <p className="num">{p.period[0]?.slice(0, 10)} to {p.period[1]?.slice(0, 10)} · {p.teams} teams</p>
-          </div>
-          <div className="grid-2">
-            <div>
-              <Figure hero label="Expected dispute losses on these payments" value={usd(p.expected_loss_usd)}
-                      note={`${num(p.expected_disputes)} disputes expected (${pct(p.expected_disputes / p.payments, 2)} of ${num(p.payments)} payments, ${usd(p.volume_usd)} collected)`} />
-              <div style={{ marginTop: 18 }}>
-                <div className="figure-label">Payments by dispute risk</div>
-                <TierBar tiers={p.tiers} />
-              </div>
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 10, justifyContent: "center" }}>
-              <p className="small">The high-risk {num(p.tiers.high)} are where checking the card and adding paperwork pays off most.</p>
-              <button className="btn btn-primary" onClick={() => openPayments("high")}>Review high-risk payments</button>
-              <button className="btn btn-secondary" onClick={() => openPayments("")}>See all payments</button>
-            </div>
+      {stage === 3 && (
+        <section className="panel" aria-labelledby="done">
+          <h2 id="done">Both steps scored</h2>
+          <p className="muted small" style={{ marginTop: 6 }}>{num(p.payments)} payments and {num(d.disputes)} disputes, {p.period[0]?.slice(0, 10)} to {p.period[1]?.slice(0, 10)}. Results and CSV exports are on the Payments and Disputes tabs.</p>
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 14 }}>
+            <button className="btn btn-primary" onClick={() => openPayments("")}>Open payments</button>
+            <button className="btn btn-secondary" onClick={openDisputes}>Open disputes</button>
           </div>
         </section>
       )}
-
-      {stage > 1 && d && (
-        <section className="panel" aria-labelledby="res2">
-          <div className="panel-head">
-            <h2 id="res2">Disputes scored</h2>
-            {d.unmatched > 0 && <p className="warn-text">{d.unmatched} disputes had no matching payment and were scored from the dispute alone.</p>}
-          </div>
-          <div className="figures">
-            <Figure label="Worth fighting" value={num(d.fight)} note="win chance × (amount + $25 fee) > $15" />
-            <Figure label="Accept" value={num(d.accept)} note="fighting costs more than it is likely to recover" />
-            <div style={{ alignSelf: "center" }}><button className="btn btn-primary" onClick={openDisputes}>Review disputes</button></div>
-          </div>
-        </section>
-      )}
-
-      {stage > 1 && <section className="panel" aria-labelledby="exp">
-        <div className="panel-head"><h2 id="exp">Exports</h2><p>CSV files in the brief's formats.</p></div>
-        <div className="exports">
-          {[
-            ["payment_predictions", "One row per uploaded payment: win chances, risk tier and score, expected loss.", p, "Run step 1 first"],
-            ["dispute_predictions", "One row per uploaded dispute: win chance and fight or accept.", d, "Run step 2 first"],
-            ["whatif_results", "One row per policy and metric for months 1–22, with ranges.", true, ""],
-          ].map(([name, text, ready, why]) => (
-            <div className="export-row" key={name}>
-              <div><div className="mono">{name}.csv</div><p>{text}</p></div>
-              {ready ? <a className="btn btn-secondary" href={exportUrl(name)} download>Download {name}.csv</a>
-                     : <button className="btn btn-secondary" disabled title={why}>{why}</button>}
-            </div>
-          ))}
-        </div>
-        {p?.blank_columns?.length > 0 && <p className="muted small">Left blank on purpose: {p.blank_columns.join(", ")}.</p>}
-        {meta && <p className="muted small" style={{ marginTop: 10 }}>Models: risk {meta.models.chosen.risk}, invoice win {meta.models.chosen.win_invoice}, payment win {meta.models.chosen.win_payment}, dispute win {meta.models.chosen.win_dispute}. Comparison tables are in the repository's experiments folder.</p>}
-      </section>}
     </div>
   );
 }

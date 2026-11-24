@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { get, num, pct, usd } from "../api.js";
+import { exportUrl, get, num, pct, usd } from "../api.js";
 import { ActionList, Drawer, EmptyState, ErrorBox, EvidenceList, EvidenceStrip, Figure, Loading, Meter, Pager, Rec, StripLegend } from "../components.jsx";
 
 const items = (s) => (s || "").split(";").filter((x) => x && x !== "none");
@@ -65,12 +65,27 @@ export default function Disputes({ session, meta, openTeam, goUpload }) {
       <div className="page-head">
         <div>
           <h1>Disputes</h1>
-          <p><b className="num">{num(s.fight)}</b> of {num(s.disputes)} disputes are worth fighting, with an expected <b className="num">{usd(s.expected_recovery_usd)}</b> recovered. Fight when the chance of winning times (amount + $25 fee) is more than the $15 it costs.</p>
+          <p>{num(s.disputes)} disputes raised on the scored payments, scored with the evidence each team submitted.</p>
         </div>
-        <StripLegend dispute />
+        <a className="btn btn-secondary" href={exportUrl("dispute_predictions")} download>Download dispute_predictions.csv</a>
       </div>
 
+      <section className="panel" aria-label="Summary">
+        <div className="figures">
+          <Figure hero label="Worth fighting" value={num(s.fight)} note={`expected ${usd(s.expected_recovery_usd)} recovered`} />
+          <Figure hero label="Accept" value={num(s.accept)} note="fighting costs more than it is likely to recover" />
+          <div style={{ alignSelf: "center", maxWidth: "46ch" }}>
+            <p className="small">Fight when the chance of winning times (amount + $25 fee) is more than the $15 it costs. Open a dispute to see that calculation and the evidence still worth submitting.</p>
+          </div>
+        </div>
+        {s.unmatched > 0 && <p className="warn-text small" style={{ marginTop: 10 }}>{s.unmatched} disputes had no matching payment and were scored from the dispute alone.</p>}
+      </section>
+
       <section className="panel flush" aria-label="Disputes table">
+        <div className="panel-head" style={{ padding: "16px 16px 0", marginBottom: 0 }}>
+          <h2>Every dispute</h2>
+          <StripLegend dispute />
+        </div>
         <div className="toolbar">
           <label>Team
             <select value={filters.team} onChange={setF("team")}>

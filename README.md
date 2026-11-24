@@ -38,16 +38,15 @@ uvicorn api:app --port 8000             # open http://localhost:8000
    - **Upload**, one step at a time:
      - Step 1: upload `invoices.csv`, `photos.csv` and `payments.csv`. Scoring opens Payments.
      - Step 2: upload `disputes.csv`. Scoring opens Disputes.
-     - Download `payment_predictions.csv`, `dispute_predictions.csv` and `whatif_results.csv`.
      - For a test upload, `python make_sample.py` (from `backend/`) cuts July–August 2026 out of `data/` into `data/sample_upload/`. The models were trained on those months, so it tests the app, not the models.
-   - **Payments:** risk tier, win chances and expected loss. Click a row to see what to add before and after payment.
-   - **Disputes:** win chance, fight or accept, and which evidence to submit.
+   - **Payments:** expected losses, the risk mix, and each payment's risk tier, win chances and expected loss. Click a row to see what to add before and after payment. Download `payment_predictions.csv` here.
+   - **Disputes:** how many are worth fighting, and each dispute's win chance, advice and evidence to submit. Download `dispute_predictions.csv` here.
 
    Payments and Disputes are greyed out until their step has been scored. A new step 1 replaces the previous upload; periods are never merged.
 2. **Months 1–22**, the history the models learned from:
    - **Teams:** one team's record, its biggest paperwork gaps compared with the platform, and its uploaded payments and disputes.
    - **Dispute reasons:** disputes, win rate and dollars lost by dispute reason.
-   - **Policy what-if:** each policy's estimated effect, with a range and a confidence level.
+   - **Policy what-if:** each policy's estimated effect, with a range and a confidence level. Download `whatif_results.csv` here.
 
 Uploads are scored with the frozen months 1–22 models and never used for training. They are held in memory for each browser tab. Step 2 re-sends the step 1 files, so scoring still works if the server restarted between steps.
 

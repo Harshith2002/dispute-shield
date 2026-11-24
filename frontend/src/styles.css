@@ -263,7 +263,7 @@ select, input[type="search"] {
 .stepper li.current .stepper-dot { background: var(--brand); border-color: var(--brand); color: var(--on-brand); }
 .stepper li.done .stepper-dot { background: var(--brand-soft); border-color: var(--brand); color: var(--brand); }
 .stepper-label { font-weight: 650; font-size: 14px; }
-.step { max-width: 760px; }
+
 .steps { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 .step { position: relative; }
 .step-num { font-size: 13px; font-weight: 700; color: var(--brand); font-stretch: 112%; }

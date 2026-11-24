@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { get, num, pct, usd } from "../api.js";
-import { ActionList, Drawer, EmptyState, ErrorBox, EvidenceList, EvidenceStrip, Figure, Loading, Meter, Pager, StripLegend, Tier } from "../components.jsx";
+import { exportUrl, get, num, pct, usd } from "../api.js";
+import { ActionList, Drawer, EmptyState, ErrorBox, EvidenceList, EvidenceStrip, Figure, Loading, Meter, Pager, StripLegend, Tier, TierBar } from "../components.jsx";
 
 function PaymentDrawer({ r, meta, onClose, openTeam }) {
   const platform = meta?.totals?.dispute_rate;
@@ -62,10 +62,25 @@ export default function Payments({ session, meta, openTeam, goUpload, tier, setT
       <div className="page-head">
         <div>
           <h1>Payments</h1>
-          <p><b className="num">{num(s.tiers.high)}</b> of {num(s.payments)} payments are high risk. Together all payments carry <b className="num">{usd(s.expected_loss_usd)}</b> of expected dispute losses. Sorted by expected loss so the costliest exposure comes first.</p>
+          <p className="num">{num(s.payments)} payments from {s.teams} teams, {s.period[0]?.slice(0, 10)} to {s.period[1]?.slice(0, 10)}, scored with the months 1–22 models.</p>
         </div>
-        <StripLegend />
+        <a className="btn btn-secondary" href={exportUrl("payment_predictions")} download>Download payment_predictions.csv</a>
       </div>
+
+      <section className="panel" aria-label="Summary">
+        <div className="grid-2">
+          <Figure hero label="Expected dispute losses on these payments" value={usd(s.expected_loss_usd)}
+                  note={`${num(s.expected_disputes)} disputes expected (${pct(s.expected_disputes / s.payments, 2)} of payments, ${usd(s.volume_usd)} collected)`} />
+          <div>
+            <div className="figure-label">Payments by dispute risk</div>
+            <TierBar tiers={s.tiers} />
+            <p className="small" style={{ marginTop: 10 }}>The {num(s.tiers.high)} high-risk payments are where checking the card and adding paperwork pays off most.{" "}
+              {tier !== "high" && <button className="link-btn" onClick={() => { setPage(1); setTier("high"); }}>Show only high risk</button>}
+            </p>
+          </div>
+        </div>
+        {s.blank_columns?.length > 0 && <p className="muted small" style={{ marginTop: 10 }}>Left blank on purpose in the export: {s.blank_columns.join(", ")}.</p>}
+      </section>
 
       {!session.disputes && (
         <div className="next-step" role="note">
@@ -75,6 +90,10 @@ export default function Payments({ session, meta, openTeam, goUpload, tier, setT
       )}
 
       <section className="panel flush" aria-label="Payments table">
+        <div className="panel-head" style={{ padding: "16px 16px 0", marginBottom: 0 }}>
+          <h2>Every payment</h2>
+          <StripLegend />
+        </div>
         <div className="toolbar">
           <label>Team
             <select value={filters.team} onChange={setF("team")}>

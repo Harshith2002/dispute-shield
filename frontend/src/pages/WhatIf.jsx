@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getCached, num, peek, signed, usd } from "../api.js";
+import { exportUrl, getCached, num, peek, signed, usd } from "../api.js";
 import { ErrorBox, Loading } from "../components.jsx";
 
 const METRICS = [
@@ -65,6 +65,7 @@ export default function WhatIf() {
           <h1>Policy what-if</h1>
           <p>What each policy would have changed had it applied from November 2024 to August 2026. {best.label} saves the most: an estimated <b className="num">{usd(-best.metrics.usd_lost.estimate)}</b> fewer dollars lost to disputes. Negative means fewer.</p>
         </div>
+        <a className="btn btn-secondary" href={exportUrl("whatif_results")} download>Download whatif_results.csv</a>
       </div>
 
       <section className="panel" aria-labelledby="compare">
