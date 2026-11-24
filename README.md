@@ -14,10 +14,10 @@ APPROACH.md  approach document
 Requires Python 3.15 and Node 22 or later.
 
 ```bash
-# 1. train (about 4 min): writes backend/artifacts/ and backend/experiments/
+# 1. train (about 25 min, mostly the what-if bootstrap): writes backend/artifacts/ and backend/experiments/
 cd backend
 pip install -r requirements.txt
-python train.py --data ../data          # --boot 30 bootstrap draws for what-if ranges (default)
+python train.py --data ../data          # --boot 200 bootstrap draws for what-if ranges (default)
 python -m pytest tests -q
 
 # 2. frontend
