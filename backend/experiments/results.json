@@ -1,0 +1,195 @@
+{
+  "results": {
+    "risk": {
+      "question": "Will this payment be disputed? (payment collected)",
+      "features": "payment",
+      "approaches": {
+        "lookup": {
+          "n": 54006,
+          "positives": 405,
+          "auc": 0.7676444215961512,
+          "avg_precision": 0.10216305115302576,
+          "log_loss": 0.03644351165108292,
+          "brier": 0.006868399690056503,
+          "ece": 0.0008498810574146724,
+          "pred_over_actual": 1.005725117826426
+        },
+        "logreg": {
+          "n": 54006,
+          "positives": 405,
+          "auc": 0.7864792461721624,
+          "avg_precision": 0.19026401965020429,
+          "log_loss": 0.035639498312066115,
+          "brier": 0.006635722035039409,
+          "ece": 0.0015368747147700501,
+          "pred_over_actual": 0.968940669421343
+        },
+        "gbm": {
+          "n": 54006,
+          "positives": 405,
+          "auc": 0.7979738723319378,
+          "avg_precision": 0.21380708068084248,
+          "log_loss": 0.03415119452582004,
+          "brier": 0.006528286003677548,
+          "ece": 0.0005785055923224955,
+          "pred_over_actual": 1.0111610406547753
+        }
+      },
+      "constant": {
+        "n": 54006,
+        "positives": 405,
+        "auc": 0.5,
+        "avg_precision": 0.0074991667592489725,
+        "log_loss": 0.044169279049521656,
+        "brier": 0.007443007861128319,
+        "ece": 0.0009449781703211318,
+        "pred_over_actual": 1.0373860177996308
+      }
+    },
+    "win_invoice": {
+      "question": "Win chance if disputed, from the invoice only (invoice ready)",
+      "features": "invoice",
+      "approaches": {
+        "lookup": {
+          "n": 492,
+          "positives": 171,
+          "auc": 0.6302854748501576,
+          "avg_precision": 0.4625200664156601,
+          "log_loss": 0.6196131360988577,
+          "brier": 0.21450324765055634,
+          "ece": 0.07359713311507325,
+          "pred_over_actual": 0.929149624362106
+        },
+        "logreg": {
+          "n": 492,
+          "positives": 171,
+          "auc": 0.6201927456231441,
+          "avg_precision": 0.4500315344041749,
+          "log_loss": 0.6454397337834752,
+          "brier": 0.22679499645867351,
+          "ece": 0.08986983885860172,
+          "pred_over_actual": 1.1984067230498734
+        },
+        "gbm": {
+          "n": 492,
+          "positives": 171,
+          "auc": 0.6127416152010348,
+          "avg_precision": 0.4478668783364712,
+          "log_loss": 0.6322798045006709,
+          "brier": 0.22052171392507763,
+          "ece": 0.04906199130470659,
+          "pred_over_actual": 1.0109218924894632
+        }
+      },
+      "constant": {
+        "n": 492,
+        "positives": 171,
+        "auc": 0.5,
+        "avg_precision": 0.3475609756097561,
+        "log_loss": 0.6493671915754646,
+        "brier": 0.22826430824618243,
+        "ece": 0.05255376739533378,
+        "pred_over_actual": 0.8884938522421857
+      }
+    },
+    "win_payment": {
+      "question": "Win chance if disputed, invoice + payment (payment collected)",
+      "features": "payment",
+      "approaches": {
+        "lookup": {
+          "n": 492,
+          "positives": 171,
+          "auc": 0.6414439525605291,
+          "avg_precision": 0.5150273820738774,
+          "log_loss": 0.6156382623898623,
+          "brier": 0.21260546340248782,
+          "ece": 0.060874721398971134,
+          "pred_over_actual": 0.9119251995176676
+        },
+        "logreg": {
+          "n": 492,
+          "positives": 171,
+          "auc": 0.6219781020568035,
+          "avg_precision": 0.4751368938837425,
+          "log_loss": 0.6422463484043156,
+          "brier": 0.22553731905391033,
+          "ece": 0.09651016428211964,
+          "pred_over_actual": 1.1872737261782074
+        },
+        "gbm": {
+          "n": 492,
+          "positives": 171,
+          "auc": 0.6248929697035944,
+          "avg_precision": 0.49661222858712906,
+          "log_loss": 0.6304492548805685,
+          "brier": 0.21965568486892428,
+          "ece": 0.05640981471998684,
+          "pred_over_actual": 0.9956477463433462
+        }
+      },
+      "constant": {
+        "n": 492,
+        "positives": 171,
+        "auc": 0.5,
+        "avg_precision": 0.3475609756097561,
+        "log_loss": 0.6493671915754646,
+        "brier": 0.22826430824618243,
+        "ece": 0.05255376739533378,
+        "pred_over_actual": 0.8884938522421857
+      }
+    },
+    "win_dispute": {
+      "question": "Win chance with the evidence submitted (dispute received)",
+      "features": "dispute",
+      "approaches": {
+        "lookup": {
+          "n": 492,
+          "positives": 171,
+          "auc": 0.7462334444626624,
+          "avg_precision": 0.5622350475185314,
+          "log_loss": 0.5636440396640446,
+          "brier": 0.1943657644152026,
+          "ece": 0.07730250940334675,
+          "pred_over_actual": 0.9035571888632374
+        },
+        "logreg": {
+          "n": 492,
+          "positives": 171,
+          "auc": 0.7784700588438906,
+          "avg_precision": 0.6466937850545249,
+          "log_loss": 0.5308634618149461,
+          "brier": 0.17930854768824378,
+          "ece": 0.061099900358518346,
+          "pred_over_actual": 0.9904133342965465
+        },
+        "gbm": {
+          "n": 492,
+          "positives": 171,
+          "auc": 0.7630394782386913,
+          "avg_precision": 0.6344356229090157,
+          "log_loss": 0.538072100462814,
+          "brier": 0.18488827810777972,
+          "ece": 0.05213331016495555,
+          "pred_over_actual": 1.1457770151399134
+        }
+      },
+      "constant": {
+        "n": 492,
+        "positives": 171,
+        "auc": 0.5,
+        "avg_precision": 0.3475609756097561,
+        "log_loss": 0.6493671915754646,
+        "brier": 0.22826430824618243,
+        "ece": 0.05255376739533378,
+        "pred_over_actual": 0.8884938522421857
+      }
+    }
+  },
+  "chosen": {
+    "risk": "gbm",
+    "win_invoice": "lookup",
+    "win_payment": "lookup",
+    "win_dispute": "logreg"
+  },
+  "blank": []
+}

@@ -1,0 +1,239 @@
+{
+  "rows": [
+    {
+      "policy": "address_mandatory",
+      "metric": "disputes",
+      "estimated_change": -42.7,
+      "low": -99.5,
+      "high": 49.6
+    },
+    {
+      "policy": "address_mandatory",
+      "metric": "disputes_lost",
+      "estimated_change": -70.3,
+      "low": -103.4,
+      "high": -1.8
+    },
+    {
+      "policy": "address_mandatory",
+      "metric": "usd_lost",
+      "estimated_change": -82614.0,
+      "low": -129666.0,
+      "high": 9027.0
+    },
+    {
+      "policy": "keyed_block_over_1000",
+      "metric": "disputes",
+      "estimated_change": -149.5,
+      "low": -161.6,
+      "high": -133.5
+    },
+    {
+      "policy": "keyed_block_over_1000",
+      "metric": "disputes_lost",
+      "estimated_change": -99.9,
+      "low": -109.6,
+      "high": -89.3
+    },
+    {
+      "policy": "keyed_block_over_1000",
+      "metric": "usd_lost",
+      "estimated_change": -490014.0,
+      "low": -535890.0,
+      "high": -438426.0
+    },
+    {
+      "policy": "signed_estimate_over_500",
+      "metric": "disputes",
+      "estimated_change": -56.8,
+      "low": -100.9,
+      "high": -32.0
+    },
+    {
+      "policy": "signed_estimate_over_500",
+      "metric": "disputes_lost",
+      "estimated_change": -62.1,
+      "low": -92.4,
+      "high": -29.4
+    },
+    {
+      "policy": "signed_estimate_over_500",
+      "metric": "usd_lost",
+      "estimated_change": -173648.0,
+      "low": -261133.0,
+      "high": -80208.0
+    },
+    {
+      "policy": "photos_required",
+      "metric": "disputes",
+      "estimated_change": 81.2,
+      "low": -26.1,
+      "high": 167.2
+    },
+    {
+      "policy": "photos_required",
+      "metric": "disputes_lost",
+      "estimated_change": 25.4,
+      "low": -53.2,
+      "high": 98.9
+    },
+    {
+      "policy": "photos_required",
+      "metric": "usd_lost",
+      "estimated_change": 35730.0,
+      "low": -76749.0,
+      "high": 138964.0
+    }
+  ],
+  "meta": {
+    "address_mandatory": {
+      "label": "Customer address mandatory",
+      "description": "Every invoice must carry the customer's service address.",
+      "assumption": "About 3% of jobs under $300 stop being invoiced through ScanPay (taken from no-address jobs).",
+      "affected_payments": 100618,
+      "jobs_lost": 3364,
+      "metrics": {
+        "disputes": {
+          "baseline": 1592.0,
+          "estimate": -42.7,
+          "low": -99.5,
+          "high": 49.6,
+          "confidence": "low",
+          "draws_same_sign": 0.7,
+          "naive_no_team_controls": -95.4
+        },
+        "disputes_lost": {
+          "baseline": 1000.5,
+          "estimate": -70.3,
+          "low": -103.4,
+          "high": -1.8,
+          "confidence": "medium",
+          "draws_same_sign": 1.0,
+          "naive_no_team_controls": -122.4
+        },
+        "usd_lost": {
+          "baseline": 1378087.0,
+          "estimate": -82614.0,
+          "low": -129666.0,
+          "high": 9027.0,
+          "confidence": "medium",
+          "draws_same_sign": 0.9,
+          "naive_no_team_controls": -158276.0
+        }
+      }
+    },
+    "keyed_block_over_1000": {
+      "label": "No keyed-in cards above $1,000",
+      "description": "Card-not-present (keyed) payments above $1,000 are blocked; the customer pays by tap/chip instead.",
+      "assumption": "About 8% of those jobs are lost; the rest pay card-present.",
+      "affected_payments": 5467,
+      "jobs_lost": 437,
+      "metrics": {
+        "disputes": {
+          "baseline": 1592.0,
+          "estimate": -149.5,
+          "low": -161.6,
+          "high": -133.5,
+          "confidence": "high",
+          "draws_same_sign": 1.0,
+          "naive_no_team_controls": -151.4
+        },
+        "disputes_lost": {
+          "baseline": 1000.5,
+          "estimate": -99.9,
+          "low": -109.6,
+          "high": -89.3,
+          "confidence": "high",
+          "draws_same_sign": 1.0,
+          "naive_no_team_controls": -100.8
+        },
+        "usd_lost": {
+          "baseline": 1378087.0,
+          "estimate": -490014.0,
+          "low": -535890.0,
+          "high": -438426.0,
+          "confidence": "high",
+          "draws_same_sign": 1.0,
+          "naive_no_team_controls": -498010.0
+        }
+      }
+    },
+    "signed_estimate_over_500": {
+      "label": "Signed estimate above $500",
+      "description": "Jobs above $500 need a signed estimate before work starts.",
+      "assumption": "No jobs lost (brief: no side effects unless argued otherwise).",
+      "affected_payments": 38476,
+      "jobs_lost": 0,
+      "metrics": {
+        "disputes": {
+          "baseline": 1592.0,
+          "estimate": -56.8,
+          "low": -100.9,
+          "high": -32.0,
+          "confidence": "medium",
+          "draws_same_sign": 1.0,
+          "naive_no_team_controls": -93.2
+        },
+        "disputes_lost": {
+          "baseline": 1000.5,
+          "estimate": -62.1,
+          "low": -92.4,
+          "high": -29.4,
+          "confidence": "medium",
+          "draws_same_sign": 1.0,
+          "naive_no_team_controls": -97.6
+        },
+        "usd_lost": {
+          "baseline": 1378087.0,
+          "estimate": -173648.0,
+          "low": -261133.0,
+          "high": -80208.0,
+          "confidence": "medium",
+          "draws_same_sign": 1.0,
+          "naive_no_team_controls": -273475.0
+        }
+      }
+    },
+    "photos_required": {
+      "label": "Before and after photos required",
+      "description": "Every job needs before and after photos attached before the payment is taken.",
+      "assumption": "No jobs lost.",
+      "affected_payments": 170062,
+      "jobs_lost": 0,
+      "metrics": {
+        "disputes": {
+          "baseline": 1592.0,
+          "estimate": 81.2,
+          "low": -26.1,
+          "high": 167.2,
+          "confidence": "low",
+          "draws_same_sign": 0.73,
+          "naive_no_team_controls": -89.7
+        },
+        "disputes_lost": {
+          "baseline": 1000.5,
+          "estimate": 25.4,
+          "low": -53.2,
+          "high": 98.9,
+          "confidence": "low",
+          "draws_same_sign": 0.63,
+          "naive_no_team_controls": -146.7
+        },
+        "usd_lost": {
+          "baseline": 1378087.0,
+          "estimate": 35730.0,
+          "low": -76749.0,
+          "high": 138964.0,
+          "confidence": "low",
+          "draws_same_sign": 0.63,
+          "naive_no_team_controls": -205554.0
+        }
+      }
+    }
+  },
+  "baseline": {
+    "disputes": 1592.0,
+    "disputes_lost": 1000.5140678493889,
+    "usd_lost": 1378087.401877446
+  }
+}
