@@ -53,7 +53,9 @@ def get_session(sid: str | None, create=False) -> dict | None:
 async def read_upload(name: str, f: UploadFile) -> pd.DataFrame:
     raw = await f.read()
     if len(raw) > MAX_FILE_BYTES:
-        raise HTTPException(413, f"{name}.csv is larger than {MAX_FILE_BYTES // 2**20} MB.")
+        raise HTTPException(413, f"{name}.csv is {len(raw) / 2**20:.0f} MB; the limit is {MAX_FILE_BYTES // 2**20} MB "
+                                 "per file. Upload one period's files (about 4 MB each for two months), "
+                                 "not the full months 1-22 training data.")
     try:
         return read_table(name, io.BytesIO(raw))
     except ValueError as e:

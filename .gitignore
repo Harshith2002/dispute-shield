@@ -1,5 +1,5 @@
 # raw data stays local (brief: synthetic, but do not publish)
-data/*.csv
+data/**/*.csv
 node_modules/
 frontend/dist/
 __pycache__/

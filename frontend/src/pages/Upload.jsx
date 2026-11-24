@@ -6,6 +6,8 @@ const STEP1 = ["invoices", "photos", "payments"];
 const ALL = [...STEP1, "disputes"];
 
 const size = (f) => (f.size < 1e6 ? `${Math.max(1, Math.round(f.size / 1e3))} KB` : `${(f.size / 1e6).toFixed(1)} MB`);
+const MAX_BYTES = 20 * 1024 * 1024; // matches the server's per-file limit
+const tooBig = (fs) => Object.entries(fs).filter(([, f]) => f && f.size > MAX_BYTES).map(([k, f]) => `${k}.csv (${size(f)})`);
 
 function Slot({ name, hint, file, onPick }) {
   return (
@@ -39,6 +41,11 @@ export default function Upload({ session, onChange, meta, openPayments, openDisp
   };
 
   const run = async (step) => {
+    const big = tooBig(step === "payments" ? { invoices: files.invoices, photos: files.photos, payments: files.payments } : { disputes: files.disputes });
+    if (big.length) {
+      setError(`Too large: ${big.join(", ")}. The limit is 20 MB per file. Upload one period's files (about 4 MB each for two months), not the full months 1–22 training data.`);
+      return;
+    }
     setError("");
     setBusy(step);
     try {
