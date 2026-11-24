@@ -34,15 +34,18 @@ uvicorn api:app --port 8000             # open http://localhost:8000
 
 ## Using the app
 
-1. **Upload & export**
-   - Step 1: upload `invoices.csv`, `photos.csv` and `payments.csv` to score every payment.
-   - Step 2: upload `disputes.csv` to score every dispute.
+1. **Score files**, one step at a time:
+   - Step 1: upload `invoices.csv`, `photos.csv` and `payments.csv` to score every payment. Results show straight away.
+   - Step 2 (appears after step 1): upload `disputes.csv` to score every dispute.
    - Download `payment_predictions.csv`, `dispute_predictions.csv` and `whatif_results.csv`.
-2. **Payments**: risk tier, win chances and expected loss for each payment. Click a row to see what to add before and after payment.
-3. **Disputes**: win chance, fight or accept, and which evidence to submit.
-4. **By team**: months 1–22 history, main paperwork gaps compared with the platform, and the team's uploaded payments and disputes.
-5. **All teams**: disputes, win rate and dollars lost by dispute reason.
-6. **What-if**: each policy's estimated effect, with a range and a confidence level.
+   - For a test upload, `python make_sample.py` (from `backend/`) cuts July–August 2026 out of `data/` into `data/sample_upload/`. The models were trained on those months, so it tests the app, not the models.
+2. **Results**, for what was uploaded:
+   - **Payments:** risk tier, win chances and expected loss. Click a row to see what to add before and after payment.
+   - **Disputes:** win chance, fight or accept, and which evidence to submit.
+3. **Months 1–22**, the history the models learned from:
+   - **Teams:** one team's record, its biggest paperwork gaps compared with the platform, and its uploaded payments and disputes.
+   - **Dispute reasons:** disputes, win rate and dollars lost by dispute reason.
+   - **Policy what-if:** each policy's estimated effect, with a range and a confidence level.
 
 Uploads are scored with the frozen months 1–22 models and never used for training. They are held in memory for each browser tab. Step 2 re-sends the step 1 files, so scoring still works if the server restarted between steps.
 

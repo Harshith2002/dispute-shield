@@ -8,14 +8,13 @@ import Team from "./pages/Team.jsx";
 import AllTeams from "./pages/AllTeams.jsx";
 import WhatIf from "./pages/WhatIf.jsx";
 
-const TABS = [
-  ["upload", "Score files"],
-  ["payments", "Payments"],
-  ["disputes", "Disputes"],
-  ["team", "Teams"],
-  ["all", "Dispute reasons"],
-  ["whatif", "Policy what-if"],
+// Three sections: upload, what the upload produced, and the months 1-22 history the models learned from.
+const SECTIONS = [
+  { key: "upload", label: "Score files", views: [["upload", "Score files"]] },
+  { key: "results", label: "Results", views: [["payments", "Payments"], ["disputes", "Disputes"]] },
+  { key: "history", label: "Months 1–22", views: [["team", "Teams"], ["all", "Dispute reasons"], ["whatif", "Policy what-if"]] },
 ];
+const sectionOf = (view) => SECTIONS.find((s) => s.views.some(([v]) => v === view));
 
 function currentTheme() {
   const set = document.documentElement.dataset.theme;
@@ -43,7 +42,10 @@ export default function App() {
     setTheme(next);
   };
 
-  const go = (k) => { setTab(k); window.scrollTo(0, 0); };
+  // remember the last sub-tab per section, so switching sections returns where you were
+  const [lastView, setLastView] = useState({ upload: "upload", results: "payments", history: "team" });
+  const go = (k) => { setTab(k); setLastView((l) => ({ ...l, [sectionOf(k).key]: k })); window.scrollTo(0, 0); };
+  const section = sectionOf(tab);
   const openTeam = (id) => { setTeam(id); go("team"); };
   const openPayments = (tier = "") => { setPaymentTier(tier); go("payments"); };
 
@@ -68,7 +70,18 @@ export default function App() {
             </div>
           </div>
           <nav className="nav" aria-label="Sections">
-            {TABS.map(([k, label]) => (
+            {SECTIONS.map((s) => (
+              <button key={s.key} onClick={() => go(lastView[s.key])} aria-current={section.key === s.key ? "page" : undefined}>
+                {s.label}
+              </button>
+            ))}
+          </nav>
+        </div>
+      </header>
+      <main>
+        {section.views.length > 1 && (
+          <nav className="subnav" aria-label={`${section.label} views`}>
+            {section.views.map(([k, label]) => (
               <button key={k} onClick={() => go(k)} aria-current={tab === k ? "page" : undefined}>
                 {label}
                 {k === "payments" && p && <span className="count num">{num(p.payments)}</span>}
@@ -76,9 +89,7 @@ export default function App() {
               </button>
             ))}
           </nav>
-        </div>
-      </header>
-      <main>
+        )}
         {metaError && <div style={{ marginBottom: 16 }}><ErrorBox message={`Could not reach the Dispute Shield server (${metaError}).`} onRetry={loadMeta} /></div>}
         {tab === "upload" && <Upload session={session} onChange={refresh} meta={meta} openPayments={openPayments} openDisputes={() => go("disputes")} />}
         {tab === "payments" && <Payments session={session} meta={meta} openTeam={openTeam} goUpload={() => go("upload")} tier={paymentTier} setTier={setPaymentTier} />}
