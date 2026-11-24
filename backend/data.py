@@ -55,7 +55,8 @@ def read_table(name: str, src) -> pd.DataFrame:
             df[c] = df[c].astype(object).where(df[c].notna(), None)
     for c in DATES.get(name, []):
         if c in df.columns:
-            df[c] = pd.to_datetime(df[c], errors="coerce").astype("datetime64[ns]")
+            # all times are UTC (brief); accept mixed formats instead of silently dropping rows
+            df[c] = pd.to_datetime(df[c], errors="coerce", format="mixed", utc=True).dt.tz_localize(None).astype("datetime64[ns]")
     for c in BOOLS.get(name, []):
         df[c] = to_bool(df[c])
     for c in NUMBERS.get(name, []):
